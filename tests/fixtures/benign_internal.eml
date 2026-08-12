@@ -1,0 +1,18 @@
+MIME-Version: 1.0
+Date: Wed, 12 Aug 2026 10:00:00 +0000
+From: "Payroll" <payroll@company.test>
+To: employee@company.test
+Return-Path: <payroll@company.test>
+Subject: August payslip available
+Message-ID: <payslip-008@company.test>
+Authentication-Results: mx.company.test;
+	spf=pass smtp.mailfrom=payroll@company.test;
+	dkim=pass header.d=company.test;
+	dmarc=pass (p=reject) header.from=company.test
+Received: from mail.company.test (mail.company.test [192.0.2.10])
+	by mx.company.test with ESMTPS id def456;
+	Wed, 12 Aug 2026 10:00:00 +0000
+Content-Type: text/plain; charset="utf-8"
+
+Your payslip is available in Workday. No action needed.
+https://workday.company.test/payslips

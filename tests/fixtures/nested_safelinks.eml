@@ -1,0 +1,29 @@
+MIME-Version: 1.0
+From: reporter@company.test
+To: soc@company.test
+Subject: FW: Phishing report
+Message-ID: <wrapper@company.test>
+Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+--BOUNDARY
+Content-Type: text/plain
+
+Please investigate the attached email.
+
+--BOUNDARY
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="original.eml"
+
+MIME-Version: 1.0
+From: "Microsoft Account" <security@micros0ft-login.test>
+To: victim@company.test
+Subject: Unusual sign-in
+Message-ID: <inner-phish@micros0ft-login.test>
+Authentication-Results: mx.company.test; spf=fail; dkim=none; dmarc=fail header.from=micros0ft-login.test
+Content-Type: text/html; charset="utf-8"
+
+<html><body>Review this sign-in:
+<a href="https://nam.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmicros0ft-login.test%2Fverify&amp;data=abc&amp;sdata=def&amp;reserved=0">https://account.microsoft.com/security</a>
+</body></html>
+
+--BOUNDARY--

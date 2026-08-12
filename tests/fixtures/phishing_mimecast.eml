@@ -1,0 +1,25 @@
+MIME-Version: 1.0
+Date: Wed, 12 Aug 2026 10:00:00 +0000
+From: "IT Helpdesk" <it-helpdesk@paypa1-secure.test>
+To: victim@company.test
+Return-Path: <bounce@random-mailer.test>
+Reply-To: attacker@evil.test
+Subject: Urgent: verify your mailbox password
+Message-ID: <phish-test-001@paypa1-secure.test>
+Authentication-Results: mx.company.test;
+	spf=fail (company.test: domain of bounce@random-mailer.test does not designate 203.0.113.50 as permitted sender) smtp.mailfrom=bounce@random-mailer.test;
+	dkim=fail header.d=paypa1-secure.test;
+	dmarc=fail (p=none) header.from=paypa1-secure.test
+Received: from mail.random-mailer.test (mail.random-mailer.test [203.0.113.50])
+	by mx.company.test with ESMTPS id abc123;
+	Wed, 12 Aug 2026 10:00:00 +0000
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body>
+<p>Your mailbox will be suspended. Please verify at
+<a href="https://url.us.m.mimecastprotect.com/s/abc123xyz?domain=paypa1-secure.test">https://paypal.com/verify</a>
+immediately.</p>
+</body>
+</html>
