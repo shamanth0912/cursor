@@ -1,0 +1,12 @@
+---
+description: Cinematic looping-video hero playbook (glass nav, serif headline). Point every agent in this repo at the skill, including new chats.
+alwaysApply: true
+---
+
+# Cinematic sites skill (always on)
+
+When the user wants an expensive-looking animated website, cinematic hero, looping background video, liquid glass nav, Janus-style studio page, falling petals, or liquid-light vibe, **read and follow** `.cursor/skills/cinematic-sites/SKILL.md` before writing UI.
+
+Do not invent a generic Tailwind hero. The look is a slow seamless ~5s loop behind a black full-viewport glass hero.
+
+Slash invoke: `/cinematic-sites`
