@@ -4487,19 +4487,19 @@ window.CKM = {
     },
     {
       "local": "kodige-falls.jpg",
-      "place": "Western Ghats waterfall (Kodige / Durgadahalli stand-in until a verified Kodige Falls still is licensed)",
-      "file": "Front of water falls.jpg",
-      "artist": "MADHAN S",
+      "place": "Kodekallu Gudda waterfall, Charmadi Ghat (Mudigere country — nearest licensed cascade still for Kodige / Durgadahalli)",
+      "file": "Kodekallu gudda - Charmadi ghat.jpg",
+      "artist": "Simple-man-everyday",
       "license": "CC BY-SA 4.0",
-      "url": "https://commons.wikimedia.org/wiki/File:Front_of_water_falls.jpg"
+      "url": "https://commons.wikimedia.org/wiki/File:Kodekallu_gudda_-_Charmadi_ghat.jpg"
     },
     {
       "local": "ukkada-falls.jpg",
-      "place": "Western Ghats cascade country (Ukkada stand-in until a verified Ukkada Falls still is licensed)",
-      "file": "Beauty of western ghat.jpg",
-      "artist": "see Commons file page",
-      "license": "CC BY-SA 4.0",
-      "url": "https://commons.wikimedia.org/wiki/File:Beauty_of_western_ghat.jpg"
+      "place": "Santhosh Falls, Chikkamagaluru district (licensed district cascade — replace when a verified Ukkada Falls still is available)",
+      "file": "Santhosh falls.jpeg",
+      "artist": "PD-self (Commons)",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Santhosh_falls.jpeg"
     },
     {
       "local": "madagada-kere.jpg",
@@ -4583,11 +4583,11 @@ window.CKM = {
     },
     {
       "local": "khandya-markandeshwara.jpg",
-      "place": "Hill temple skyline from Devaramane country (Khandya Markandeshwara hill-shrine stand-in until a verified Khandya still is licensed)",
-      "file": "Temple of kalabhairava, skyline from Devaramane, Guthi village, July 5, 2011.jpg",
-      "artist": "see Commons file page",
-      "license": "CC BY-SA 3.0",
-      "url": "https://commons.wikimedia.org/wiki/File:Temple_of_kalabhairava,_skyline_from_Devaramane,_Guthi_village,_July_5,_2011.jpg"
+      "place": "Bhadra River at Khandya (Markandeshwara temple country)",
+      "file": "Khandya Bhadra.jpg",
+      "artist": "Shyamal",
+      "license": "CC BY-SA 4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Khandya_Bhadra.jpg"
     }
   ],
   "featured": [

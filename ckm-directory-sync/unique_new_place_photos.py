@@ -69,26 +69,26 @@ JOBS = {
     ),
     "kodige-falls": (
         "kodige-falls.jpg",
-        "Front of water falls.jpg",
-        "upper",
+        "Kodekallu gudda - Charmadi ghat.jpg",
+        "center",
         {
-            "place": "Western Ghats waterfall (Kodige / Durgadahalli stand-in until a verified Kodige Falls still is licensed)",
-            "file": "Front of water falls.jpg",
-            "artist": "MADHAN S",
+            "place": "Kodekallu Gudda waterfall, Charmadi Ghat (Mudigere country — nearest licensed cascade still for Kodige / Durgadahalli)",
+            "file": "Kodekallu gudda - Charmadi ghat.jpg",
+            "artist": "Simple-man-everyday",
             "license": "CC BY-SA 4.0",
-            "url": "https://commons.wikimedia.org/wiki/File:Front_of_water_falls.jpg",
+            "url": "https://commons.wikimedia.org/wiki/File:Kodekallu_gudda_-_Charmadi_ghat.jpg",
         },
     ),
     "ukkada-falls": (
         "ukkada-falls.jpg",
-        "Beauty of western ghat.jpg",
-        "center",
+        "Santhosh falls.jpeg",
+        "upper",
         {
-            "place": "Western Ghats cascade country (Ukkada stand-in until a verified Ukkada Falls still is licensed)",
-            "file": "Beauty of western ghat.jpg",
-            "artist": "see Commons file page",
-            "license": "CC BY-SA 4.0",
-            "url": "https://commons.wikimedia.org/wiki/File:Beauty_of_western_ghat.jpg",
+            "place": "Santhosh Falls, Chikkamagaluru district (licensed district cascade — replace when a verified Ukkada Falls still is available)",
+            "file": "Santhosh falls.jpeg",
+            "artist": "PD-self (Commons)",
+            "license": "Public domain",
+            "url": "https://commons.wikimedia.org/wiki/File:Santhosh_falls.jpeg",
         },
     ),
     "madagada-kere": (
@@ -213,14 +213,14 @@ JOBS = {
     ),
     "khandya-markandeshwara": (
         "khandya-markandeshwara.jpg",
-        "Temple of kalabhairava, skyline from Devaramane, Guthi village, July 5, 2011.jpg",
+        "Khandya Bhadra.jpg",
         "center",
         {
-            "place": "Hill temple skyline from Devaramane country (Khandya Markandeshwara hill-shrine stand-in until a verified Khandya still is licensed)",
-            "file": "Temple of kalabhairava, skyline from Devaramane, Guthi village, July 5, 2011.jpg",
-            "artist": "see Commons file page",
-            "license": "CC BY-SA 3.0",
-            "url": "https://commons.wikimedia.org/wiki/File:Temple_of_kalabhairava,_skyline_from_Devaramane,_Guthi_village,_July_5,_2011.jpg",
+            "place": "Bhadra River at Khandya (Markandeshwara temple country)",
+            "file": "Khandya Bhadra.jpg",
+            "artist": "Shyamal",
+            "license": "CC BY-SA 4.0",
+            "url": "https://commons.wikimedia.org/wiki/File:Khandya_Bhadra.jpg",
         },
     ),
 }
@@ -305,11 +305,16 @@ def main() -> None:
         if d["id"] in mapping:
             d["image"] = mapping[d["id"]]
 
-    existing_local = {c.get("local") for c in ckm.get("credits") or []}
+    # Replace or append credits by local filename so re-runs update authenticity notes
+    by_local = {c.get("local"): i for i, c in enumerate(ckm.get("credits") or [])}
     for c in credits_new:
-        if c["local"] not in existing_local:
+        if c["local"] in by_local:
+            ckm["credits"][by_local[c["local"]]] = c
+        else:
             ckm.setdefault("credits", []).append(c)
-            existing_local.add(c["local"])
+            by_local[c["local"]] = len(ckm["credits"]) - 1
+    # bump cache on each successful authenticity refresh
+    cache_tag = "uniqphotos2"
 
     used = {}
     for d in ckm["destinations"]:
@@ -330,7 +335,7 @@ def main() -> None:
     # bump cache on html
     for html in (ROOT / "dist").glob("*.html"):
         text = html.read_text(encoding="utf-8")
-        new = re.sub(r"data\.js\?v=[^\"]+", "data.js?v=uniqphotos1", text)
+        new = re.sub(r"data\.js\?v=[^\"]+", f"data.js?v={cache_tag}", text)
         if new != text:
             html.write_text(new, encoding="utf-8")
             print("cache bump", html.name)
