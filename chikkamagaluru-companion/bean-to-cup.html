@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Baba Budan, then the cup · Chikkamagaluru</title>
+    <meta
+      name="description"
+      content="How coffee reached Chikkamagaluru: Baba Budan’s seven Mocha seeds, shade planting, cherry, roast, filter coffee. Scroll the walk. Not a shop."
+    />
+    <meta name="theme-color" content="#05070a" />
+    <script>
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    </script>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="secret-pathways-assets/fonts.css" />
+    <link rel="stylesheet" href="seq-walk.css?v=cup22" />
+    <link rel="stylesheet" href="chikku.css?v=chikku7" />
+  </head>
+  <body class="is-locked">
+    <a class="skip" href="#reel">Skip to story</a>
+
+    <div id="pre" aria-live="polite">
+      <div class="pre-in">
+        <div class="pre-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none">
+            <ellipse cx="22" cy="24" rx="11" ry="14" stroke="#dfe7e0" stroke-width="1.2"/>
+            <path d="M33 20c4 1 6 5 4 9s-7 5-9 3" stroke="#dfe7e0" stroke-width="1.2"/>
+            <path d="M16 10c2-4 8-5 11-1" stroke="#e0231c" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <p class="pre-jp">ಚಿಕ್ಕಮಗಳೂರು</p>
+        <div class="pre-bar"><i id="pre-bar"></i></div>
+        <div class="pre-meta"><span data-i="pre.l">Seven seeds</span><b id="pre-num">000</b><span data-i="pre.r">One cup</span></div>
+      </div>
+    </div>
+
+    <div id="grain" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="index.html">
+        <svg viewBox="0 0 34 34" fill="none" aria-hidden="true">
+          <circle cx="17" cy="17" r="16" stroke="currentColor" stroke-width="1"/>
+          <path d="M11 21c2-8 10-10 13-4" stroke="#e0231c" stroke-width="1.2"/>
+        </svg>
+        <span class="brand-tx"><b>Chikkamagaluru</b><i>ಚಿಕ್ಕಮಗಳೂರು</i></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="index.html" data-i="nav.home">Home</a>
+        <a class="nav-link" href="index.html#explore-chikmagaluru" data-i="nav.explore">Explore</a>
+        <a class="nav-link" href="places.html" data-i="nav.places">Places</a>
+        <a class="nav-link" href="stories.html" data-i="nav.stories">Stories</a>
+        <a class="nav-link on" href="bean-to-cup.html" data-i="nav.here">Bean to cup</a>
+        <a class="nav-link" href="plan.html" data-i="nav.plan">Plan</a>
+        <button class="nav-lang" type="button" data-lang-toggle aria-pressed="false">ಕನ್ನಡ</button>
+      </nav>
+      <button class="nav-burger" type="button" aria-expanded="false" aria-label="Open menu"><i></i><i></i></button>
+    </header>
+    <div
+      class="walk-progress"
+      role="progressbar"
+      aria-label="Walk progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+      <span class="walk-progress-track">
+        <i id="walk-progress-bar" class="walk-progress-indicator"></i>
+      </span>
+    </div>
+
+    <div class="reel" id="reel">
+      <div class="stage">
+        <canvas id="seq" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+        <p class="walk-title">
+          <span data-i="page.k">The walk</span>
+          <b data-i="page.h">Bean to cup</b>
+        </p>
+        <div class="copy-rail">
+        <div class="chips" aria-label="Acts">
+          <button class="chip on" type="button" data-act="I"><span class="num">I</span><b data-i="chip.i">Origin</b></button>
+          <button class="chip" type="button" data-act="II"><span class="num">II</span><b data-i="chip.ii">Crop</b></button>
+        </div>
+        <article class="copy-card" id="copy-card">
+          <p class="kicker"><span class="dot"></span><span id="copy-k">00 · The saint</span><span class="lore" id="copy-lore" hidden>Lore</span></p>
+          <h2 id="copy-h">Baba Budan, the name on this ridge</h2>
+          <p class="lead" id="copy-p1">Coffee did not arrive in this district as a cup.</p>
+          <p class="body" id="copy-p2">The years disagree. The ridge does not.</p>
+          <p class="cap" id="copy-cap">Companion still of Baba Budan.</p>
+        </article>
+        </div>
+        <div class="stage-meta">
+          <span id="frame-act">Act I · Origin</span>
+        </div>
+        <nav class="seq-dots" aria-label="Beats">
+          <button type="button" class="on" aria-label="00"><i></i></button>
+          <button type="button" aria-label="01"><i></i></button>
+          <button type="button" aria-label="02"><i></i></button>
+          <button type="button" aria-label="03"><i></i></button>
+          <button type="button" aria-label="04"><i></i></button>
+          <button type="button" aria-label="05"><i></i></button>
+          <button type="button" aria-label="06"><i></i></button>
+          <button type="button" aria-label="07"><i></i></button>
+          <button type="button" aria-label="08"><i></i></button>
+          <button type="button" aria-label="09"><i></i></button>
+          <button type="button" aria-label="10"><i></i></button>
+          <button type="button" aria-label="11"><i></i></button>
+          <button type="button" aria-label="12"><i></i></button>
+          <button type="button" aria-label="13"><i></i></button>
+          <button type="button" aria-label="14"><i></i></button>
+        </nav>
+      </div>
+      <div class="reel-snaps" id="reel-snaps" aria-hidden="true"></div>
+    </div>
+
+    <section class="longread" id="longread"></section>
+
+    <section class="close" id="close">
+      <p class="eyebrow" data-i="close.k">Close</p>
+      <h2 data-i="close.h">Drink. Leave the rows.</h2>
+      <p data-i="close.p">From seven Mocha seeds to filter coffee is one walk. This page is not a shop. Believe the slope. Treat the beard as lore.</p>
+      <div class="cta-row">
+        <a class="cta" href="index.html"><i></i><span data-i="cta.home">Back to the companion</span></a>
+        <a class="cta" href="places.html?id=baba-budangiri"><i></i><span data-i="cta.baba">Baba Budangiri</span></a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <h4>Chikkamagaluru</h4>
+          <p data-i="foot.note">Independent companion. Not a government site. Not a booking service.</p>
+        </div>
+        <div>
+          <h4>Walk</h4>
+          <ul>
+            <li><a href="bean-to-cup.html">Bean to cup</a></li>
+            <li><a href="coffee.html">Coffee chapter</a></li>
+            <li><a href="stories.html">Stories</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Sources</h4>
+          <ul>
+            <li><a href="https://coffeeboard.gov.in/" rel="noopener noreferrer">Coffee Board of India</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Baba_Budan" rel="noopener noreferrer">Baba Budan</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Indian_coffee" rel="noopener noreferrer">Indian coffee</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Companion</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="plan.html">Plan</a></li>
+            <li><a href="visit.html">Visit</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-base">
+        <span>Bean to cup · 00–14</span>
+        <span>Not for sale</span>
+      </div>
+    </footer>
+
+    <script src="secret-pathways-assets/three.min.js"></script>
+    <script src="kage-walk.js?v=cup25"></script
+    <script src="bean-cursor.js?v=bean1"></script>
+    <script src="chikku.js?v=chikku8"></script>
+  </body>
+</html>

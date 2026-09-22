@@ -1,0 +1,3181 @@
+From 972b0984ae4fb499820b918da3afa8bdaf15320e Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 22 Sep 2026 18:42:16 +0000
+Subject: [PATCH] Enrich destinations with tourism brochure facts
+
+Expand the catalogue from 56 to 72 places using Department of Tourism
+brochure distances, routes, and official descriptions. Add missing
+falls, viewpoints, and temples; deepen existing summaries; split
+lookalike places (Soor Mane vs Sirimane, Rani Jhari vs Jhari,
+Devaramane vs Deviramma). Bump data.js cache query for clients.
+---
+ dist/coffee.html               |    2 +-
+ dist/data.js                   | 1158 +++++++++++++++++++++++++++-----
+ dist/food.html                 |    2 +-
+ dist/heritage.html             |    2 +-
+ dist/index.html                |    2 +-
+ dist/map.html                  |    2 +-
+ dist/nature.html               |    2 +-
+ dist/places.html               |    2 +-
+ dist/plan.html                 |    2 +-
+ dist/popular.html              |    2 +-
+ dist/stay.html                 |    2 +-
+ dist/stories.html              |    2 +-
+ dist/taluk.html                |    2 +-
+ dist/tourism.html              |    2 +-
+ dist/visit.html                |    2 +-
+ scripts/merge_brochure_data.py | 1047 +++++++++++++++++++++++++++++
+ 16 files changed, 2040 insertions(+), 193 deletions(-)
+ create mode 100644 scripts/merge_brochure_data.py
+
+diff --git a/dist/coffee.html b/dist/coffee.html
+index ac1b723..f75975d 100644
+--- a/dist/coffee.html
++++ b/dist/coffee.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/data.js b/dist/data.js
+index c0d2fd5..47ffcef 100644
+--- a/dist/data.js
++++ b/dist/data.js
+@@ -3,7 +3,7 @@ window.CKM = {
+     "name": "Chikkamagaluru",
+     "nameKn": "ಚಿಕ್ಕಮಗಳೂರು",
+     "title": "Chikkamagaluru, a Western Ghats companion",
+-    "description": "An independent, static companion for discovering Chikkamagaluru district: peaks, waterfalls, temples, forests and seasons. Not a government site, not a booking service, and nothing here is downloadable.",
++    "description": "An independent, static companion for discovering Chikkamagaluru district: peaks, waterfalls, temples, forests and seasons. Place facts are enriched from the District Department of Tourism brochure and official notes. Not a government site, not a booking service, and nothing here is downloadable.",
+     "town": {
+       "lat": 13.325246,
+       "lng": 75.792399,
+@@ -19,7 +19,14 @@ window.CKM = {
+     "karnataka_tourism": "https://karnatakatourism.org/",
+     "forest": "https://aranya.gov.in/",
+     "ksrtc": "https://ksrtc.karnataka.gov.in/",
+-    "india_gov": "https://www.india.gov.in/"
++    "india_gov": "https://www.india.gov.in/",
++    "tourism_office_phone": "08262-295422",
++    "tourism_office_mobile": "7892886875",
++    "tourism_office_email": "ckm.tourism@gmail.com",
++    "tourism_office_address": "Office of the Assistant Director, Department of Tourism, Belur Road, Near Kote Circle, Chikkamagaluru – 577101",
++    "tourism_site": "https://www.chikkamagalurutourism.in/",
++    "aranyavihaara": "https://aranyavihaara.karnataka.gov.in/",
++    "bhadra_tickets": "https://tickets.bhadratigerreserve.in/"
+   },
+   "categories": [
+     {
+@@ -31,7 +38,7 @@ window.CKM = {
+       "id": "waterfalls",
+       "label": "Waterfalls",
+       "kn": "ಜಲಪಾತಗಳು",
+-      "count": 8,
++      "count": 13,
+       "image": "assets/hebbe-falls.jpg",
+       "lead": "Seasonal cascades, fullest after the monsoon, quieter in summer.",
+       "leadKn": "ಮಳೆಗಾಲದ ನಂತರ ತುಂಬುವ ಜಲಪಾತಗಳು."
+@@ -40,7 +47,7 @@ window.CKM = {
+       "id": "temples",
+       "label": "Temples",
+       "kn": "ದೇವಾಲಯಗಳು",
+-      "count": 14,
++      "count": 19,
+       "image": "assets/sringeri.jpg",
+       "lead": "Living shrines from the Tunga terrace to Hoysala stone in the east.",
+       "leadKn": "ತುಂಗಾ ತಟದಿಂದ ಹೊಯ್ಸಳ ಶಿಲ್ಪದವರೆಗೆ ದೇವಾಲಯಗಳು."
+@@ -58,7 +65,7 @@ window.CKM = {
+       "id": "lakes",
+       "label": "Lakes",
+       "kn": "ಕೆರೆಗಳು",
+-      "count": 4,
++      "count": 5,
+       "image": "assets/hirekolale.jpg",
+       "lead": "Irrigation tanks and evening water, with the Baba Budan range on the skyline.",
+       "leadKn": "ಸಂಜೆ ಬೆಳಕಿನ ಕೆರೆಗಳು."
+@@ -103,7 +110,7 @@ window.CKM = {
+       "id": "viewpoints",
+       "label": "Viewpoints",
+       "kn": "ನೋಟದ ಸ್ಥಳಗಳು",
+-      "count": 3,
++      "count": 6,
+       "image": "assets/z-point.jpg",
+       "lead": "Road-head notches and ghat shelves, stop, look, keep moving with daylight.",
+       "leadKn": "ಘಟ್ಟದ ನೋಟಗಳು."
+@@ -112,7 +119,7 @@ window.CKM = {
+       "id": "treks",
+       "label": "Treks",
+       "kn": "ಟ್ರೆಕ್‌ಗಳು",
+-      "count": 7,
++      "count": 9,
+       "image": "assets/ettina-bhuja.jpg",
+       "lead": "Walked ridges and grassland, permits and weather first, not a packaged hike sold here.",
+       "leadKn": "ನಡೆದು ಹೋಗುವ ದಿಣ್ಣೆಗಳು."
+@@ -137,9 +144,9 @@ window.CKM = {
+       "lat": 13.7018,
+       "lng": 75.656,
+       "image": "assets/bhadra-dam.jpg",
+-      "blurb": "The Bhadra dam backwaters on the edge of tiger country.",
+-      "summary": "Bhadra Dam at Lakkavalli holds a reservoir on the Bhadra River, a Tungabhadra tributary. The waters sit against the forests of Bhadra Tiger Reserve.",
+-      "visit": "Dam-viewing points and any boating, if offered, are managed locally and may close. Do not assume public access to the dam structure itself.",
++      "blurb": "The Bhadra dam at Lakkavalli — irrigation, power and tiger-country backwaters.",
++      "summary": "Lakkavalli Dam is a major landmark of Chikkamagaluru district, about 40 km from the city by the tourism brochure (via Tarikere on SH57). Lakkavalli in Tarikere Taluk holds a substantial dam on the Bhadra River for irrigation and power. Its verdant surroundings are part of the agriculturally important Malnad landscape and sit beside Bhadra tiger country.",
++      "visit": "Dam-viewing points and any boating, if offered, are managed locally and may close. Do not assume public access to the dam structure itself. Best route: Southeast on SH57 from Tarikere to Lakkavalli Dam.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -152,13 +159,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "easy",
+       "durationMin": 120,
+-      "distanceKm": 60,
+-      "bestTime": "October – February"
++      "distanceKm": 40,
++      "bestTime": "October – February",
++      "bestRoute": "Southeast on SH57 from Tarikere to Lakkavalli Dam"
+     },
+     {
+       "id": "lakya-dam",
+@@ -201,8 +213,8 @@ window.CKM = {
+       "lat": 13.1667,
+       "lng": 75.4667,
+       "image": "assets/ballalarayana-durga.jpg",
+-      "blurb": "A Hoysala hill fort on the Charmadi ridge, reached on foot through shola grassland.",
+-      "summary": "A Hoysala hill fort on the Charmadi ridge, reached on foot through shola grassland.",
++      "blurb": "A Hoysala-era hill fort at 1,509 m above the Western Ghats forests.",
++      "summary": "Ballalarayana Durga is a historic hilltop fort in the lush Western Ghats, about 72 km from Chikkamagaluru. Built in the Hoysala period and set at about 1,509 m, it is a popular trekking and camping destination with panoramic sunset views. Nearest attractions: Bandaje Falls, Kalabhairaveshwara Temple, Rani Jhari, Kudremukh, Kalasa.",
+       "visit": "A Hoysala-period hill fort on the Charmadi ridge, reached on foot through shola grassland. There is no ticket sold here. Forest and weather decide whether the walk is open.",
+       "seasons": [
+         "winter",
+@@ -215,13 +227,19 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "mudigere",
+       "difficulty": "difficult",
+       "durationMin": 300,
+-      "distanceKm": 85,
+-      "bestTime": "October – February"
++      "distanceKm": 72,
++      "bestTime": "October – February",
++      "elevation": "1,509 m",
++      "nearestAttractions": "Bandaje Falls, Kalabhairaveshwara Temple, Rani Jhari, Kudremukh, Kalasa"
+     },
+     {
+       "id": "chandranatha-basadi-kalasa",
+@@ -447,9 +465,9 @@ window.CKM = {
+       "lng": 75.7519,
+       "elevation": "1,434 m",
+       "image": "assets/kemmanagundi.jpg?v=peaks1",
+-      "blurb": "A garden hill station on the Baba Budan Giri range, once a Wodeyar summer camp.",
+-      "summary": "About 55 kilometres north of Chikkamagaluru town, Kemmanagundi (also K.R. Hills) sits at 1,434 metres. Krishnaraja Wodeyar IV used it as a summer retreat. The district describes ornamental gardens, shola grassland views and mountain streams.",
+-      "visit": "Lingadahalli is a common junction on the way. Garden hours, jeep tracks to nearby falls and any horticulture-department notices should be checked close to travel.",
++      "blurb": "A garden hill station with Western Ghats panoramas — easy for families.",
++      "summary": "Kemmanagundi View Point / hill station sits about 60 km from Chikkamagaluru. The brochure highlights panoramic views of valleys, forests and mountain ranges, easy access for all ages, and popularity for sunrise, sunset and landscape photography. Cool mountain weather without a strenuous trek. Nearest attractions include Z Point, Hebbe Falls, Shanti Falls and Raj Bhavan.",
++      "visit": "Lingadahalli is a common junction on the way. Garden hours, jeep tracks to nearby falls and any horticulture-department notices should be checked close to travel. Nearest attractions: Z Point, Hebbe Falls, Shanti Falls, Raj Bhavan.",
+       "seasons": [
+         "winter",
+         "summer",
+@@ -464,13 +482,18 @@ window.CKM = {
+         {
+           "label": "District tourism note",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "easy",
+       "durationMin": 240,
+-      "distanceKm": 55,
+-      "bestTime": "September – February"
++      "distanceKm": 60,
++      "bestTime": "September – February",
++      "nearestAttractions": "Z Point, Hebbe Falls, Shanti Falls, Raj Bhavan"
+     },
+     {
+       "id": "ayyanakere",
+@@ -481,28 +504,35 @@ window.CKM = {
+       "lat": 13.4434,
+       "lng": 75.8741,
+       "image": "assets/ayyanakere.jpg",
+-      "blurb": "A historic irrigation lake near Sakharayapatna, about 18 kilometres from town.",
+-      "summary": "Ayyanakere, near Sakharayapatna, is a major irrigation tank for surrounding villages, with canals spreading water across the Maidan edge of the district.",
+-      "visit": "A landscape and birding stop more than a facility. Respect farm roads and irrigation structures.",
++      "blurb": "One of Karnataka’s great lakes near Sakharayapatna — hills on the horizon.",
++      "summary": "Ayyanakere, near Sakarayapattana about 22 km from Chikkamagaluru by the brochure, is one of Karnataka’s largest lakes, framed by rolling hills and forest. It is popular for photography and quiet time; water-sports activities are also organized during the annual Shakuniranganatha Swamy Jatra Mahotsava in January.",
++      "visit": "A landscape and birding stop more than a facility. Respect farm roads and irrigation structures. Best route: Chikkamagaluru–Kadur Road; turn left from Sakarayapattana / Sakharayapatna town.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+       ],
+       "tags": [
+         "lake",
+-        "birds"
++        "birds",
++        "jatra",
++        "january"
+       ],
+       "sources": [
+         {
+           "label": "District profile",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kadur",
+       "difficulty": "easy",
+       "durationMin": 60,
+-      "distanceKm": 40,
+-      "bestTime": "November – February"
++      "distanceKm": 22,
++      "bestTime": "November – February",
++      "bestRoute": "Chikkamagaluru–Kadur Road; turn left from Sakarayapattana / Sakharayapatna town"
+     },
+     {
+       "id": "bhadra-backwaters-nrpura",
+@@ -575,9 +605,9 @@ window.CKM = {
+       "lat": 13.3581,
+       "lng": 75.7137,
+       "image": "assets/hirekolale.jpg",
+-      "blurb": "An evening lake west of town, with Mullayanagiri on the skyline.",
+-      "summary": "Hirekolale is a small reservoir a short drive from Chikkamagaluru, known for sunset light and a view toward Mullayanagiri.",
+-      "visit": "A gentle stop rather than a trek. There is no swimming guidance published here; banks can be muddy after rain.",
++      "blurb": "A serene lake about 10 km from town, tucked among the hills.",
++      "summary": "Hirekolale Lake is a scenic lake amidst the hills and valleys of Chikkamagaluru, about 10 km from the city. Surrounded by lush greenery, it is a known spot for picnics, nature walks and boating.",
++      "visit": "A gentle stop rather than a trek. There is no swimming guidance published here; banks can be muddy after rain. Best route: Local roads from Chikkamagaluru city.",
+       "seasons": [
+         "winter",
+         "summer",
+@@ -586,19 +616,66 @@ window.CKM = {
+       "tags": [
+         "lake",
+         "sunset",
+-        "easy"
++        "easy",
++        "picnic",
++        "boating"
+       ],
+       "sources": [
+         {
+           "label": "District / local geography",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 60,
+       "distanceKm": 10,
+-      "bestTime": "All year (best in winter)"
++      "bestTime": "All year (best in winter)",
++      "bestRoute": "Local roads from Chikkamagaluru city"
++    },
++    {
++      "id": "madagada-kere",
++      "name": "Madagada Kere",
++      "kannada": "ಮಡಗಡ ಕೆರೆ",
++      "category": "lakes",
++      "taluk": "Kadur",
++      "talukId": "kadur",
++      "lat": 13.55,
++      "lng": 76.0,
++      "image": "assets/ayyanakere.jpg",
++      "distanceKm": null,
++      "distanceNote": "Brochure: approximately 12 km from Kadur (SH24 south, then southwest)",
++      "bestRoute": "From Kadur, head south on SH24 and continue southwest to Madagada Kere",
++      "bestTime": "October – February",
++      "difficulty": "easy",
++      "durationMin": 120,
++      "blurb": "A tranquil Kadur-side lake for walks, boating and local cultural days.",
++      "summary": "Madagada Kere near Kadur is a picturesque lake and popular recreational place for locals and visitors. The brochure notes leisurely lakeside walks, boating, and cultural significance as a source of livelihood and a venue for regional events — a calm Malnad-east water sheet rather than a ghat trek.",
++      "visit": "Open lakeshore setting. Any boating is local — this page does not sell tickets. Best route: From Kadur, head south on SH24 and continue southwest to Madagada Kere. Brochure: approximately 12 km from Kadur (SH24 south, then southwest).",
++      "seasons": [
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "lake",
++        "boating",
++        "kadur"
++      ],
++      "near": "Kadur",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
+     },
+     {
+       "id": "baba-budangiri",
+@@ -610,8 +687,8 @@ window.CKM = {
+       "lng": 75.7607,
+       "elevation": "1,895 m",
+       "image": "assets/baba-budangiri.jpg",
+-      "blurb": "A shared shrine on a crescent ridge, and the hill that coffee lore in India begins with.",
+-      "summary": "Also called Chandra Drona Parvatha, this range holds one of the highest mountain lines between the Himalayas and the Nilgiris. The peak takes its popular name from the Sufi saint Baba Budan. A cave shrine associated with both Dattatreya and Baba Budan sits on the ridge.",
++      "blurb": "Shared Hindu–Muslim pilgrimage ridge — Datta Peetha and coffee-country legend.",
++      "summary": "Shri Guru Dattatreya Bababudan Swamy Dargah (Baba Budangiri / Datta Peetha), about 33 km from Chikkamagaluru, is a revered pilgrimage and trekking site in the Western Ghats. The brochure notes its spiritual significance, scenic landscapes and unique blend of traditions — a sacred shrine of Guru Dattatreya revered by both Hindu and Muslim communities. Nearest attractions: Mullayanagiri, Manikyadhara Falls, Jhari Falls.",
+       "visit": "The district site describes the range north of Chikkamagaluru town. Access, shrine timings and any crowd-management rules change; confirm with official notices rather than travel blogs.",
+       "seasons": [
+         "winter",
+@@ -626,13 +703,18 @@ window.CKM = {
+         {
+           "label": "District tourism note",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 120,
+-      "distanceKm": 28,
+-      "bestTime": "September – February"
++      "distanceKm": 33,
++      "bestTime": "September – February",
++      "nearestAttractions": "Mullayanagiri, Manikyadhara Falls, Jhari Falls"
+     },
+     {
+       "id": "deviramma",
+@@ -643,9 +725,9 @@ window.CKM = {
+       "lat": 13.4257,
+       "lng": 75.7741,
+       "image": "assets/deviramma.jpg",
+-      "blurb": "A steep peak in the Baba Budan Giri trio, with a hill shrine and a newer foothill temple.",
+-      "summary": "Deviramma is a popular local deity. The district notes a temple on the pointed peak near Baba Budangiri, and a more easily reached temple at Bindiga, about 18 kilometres north of town, with Mullayanagiri, Baba Budangiri and Deviramma as a backdrop.",
+-      "visit": "The hill temple’s opening is described on the district site as limited (historically around Deepavali). Treat festival dates and access points as changeable and confirm officially.",
++      "blurb": "A sacred hilltop near the Mullayanagiri country — pilgrimage and ridge views.",
++      "summary": "Deviramma Hilltop is a sacred hill destination about 25 km from Chikkamagaluru, combining spirituality and a moderate trek. The summit rewards panoramic Western Ghats views and is a noted Deepavali pilgrimage. Nearest attractions: Deviramma Temple, Mullayanagiri.",
++      "visit": "The hill temple’s opening is described on the district site as limited (historically around Deepavali). Treat festival dates and access points as changeable and confirm officially. Best route: Moderate trekking trail to the hilltop shrine / summit.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -654,53 +736,23 @@ window.CKM = {
+         "temple",
+         "trek"
+       ],
+-      "sources": [
+-        {
+-          "label": "District tourism note",
+-          "url": "https://chikkamagaluru.nic.in/en/tourism/"
+-        }
+-      ],
+-      "talukId": "chikkamagaluru",
+-      "difficulty": "moderate",
+-      "durationMin": 150,
+-      "distanceKm": 18,
+-      "bestTime": "October – February"
+-    },
+-    {
+-      "id": "deviramma-temple",
+-      "name": "Deviramma Temple, Mallenahalli",
+-      "kannada": "ದೇವಿರಮ್ಮ ದೇವಸ್ಥಾನ, ಮಲ್ಲೇನಹಳ್ಳಿ",
+-      "category": "temples",
+-      "taluk": "Chikkamagaluru",
+-      "lat": 13.452,
+-      "lng": 75.778,
+-      "image": "assets/deviramma-temple.jpg",
+-      "blurb": "The foothill shrine of Goddess Deviramma on Bindiga estate road at Mallenahalli.",
+-      "summary": "Adishakthyathmaka Sri Deviramma Temple sits in the quiet of Mallenahalli, on Bindiga estate road north of Chikkamagaluru town. Devotees come here year-round; the hill shrine on Deviramma Betta above is associated with Deepavali, when the climb is traditionally opened.",
+-      "visit": "The Mallenahalli temple is the everyday access. The peak temple is described locally as festival-time only. Dress, photography and festival dates follow the shrine, not this page. Confirm access on the district tourism note before you go.",
+-      "seasons": [
+-        "winter",
+-        "post-monsoon"
+-      ],
+-      "tags": [
+-        "heritage",
+-        "temple"
+-      ],
+       "sources": [
+         {
+           "label": "District tourism note",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
+         },
+         {
+-          "label": "Photograph, Bindiga estate road, Mallenahalli",
+-          "url": "https://commons.wikimedia.org/wiki/File:DEVIRAMMA_TEMPLE.jpg"
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+-      "difficulty": "easy",
+-      "durationMin": 60,
+-      "distanceKm": 18,
+-      "bestTime": "October – February"
++      "difficulty": "moderate",
++      "durationMin": 150,
++      "distanceKm": 25,
++      "bestTime": "October – February",
++      "bestRoute": "Moderate trekking trail to the hilltop shrine / summit",
++      "nearestAttractions": "Deviramma Temple, Mullayanagiri"
+     },
+     {
+       "id": "ettina-bhuja",
+@@ -711,9 +763,9 @@ window.CKM = {
+       "lat": 12.9804,
+       "lng": 75.5656,
+       "image": "assets/ettina-bhuja.jpg",
+-      "blurb": "An ox-shoulder ridge walk above coffee and grassland, west of Kalasa.",
+-      "summary": "Ettina Bhuja (ox shoulder) is a well-known ridgeline trek in the Mudigere–Kalasa landscape. The walk is prized for grassland views rather than a built viewpoint.",
+-      "visit": "This is hill country with changing weather. Confirm current trail access with local forest or tourism counters; some grassland walks are periodically restricted.",
++      "blurb": "“Ox’s Shoulder” — a distinctive Western Ghats trek over Charmadi country.",
++      "summary": "Ettina Bhuja, popularly called the Ox’s Shoulder, is one of the most accessible and rewarding treks in these hills. The brochure records an elevation of about 4,265 feet, an easy-to-moderate trail through dense forest and rolling grassland, and panoramic views of the Charmadi and Shishila valleys. Nearest attractions: Mudigere, Devaramane, Charmadi Ghat.",
++      "visit": "This is hill country with changing weather. Confirm current trail access with local forest or tourism counters; some grassland walks are periodically restricted. Tourism brochure lists 25 km from Chikkamagaluru; practical road+trail access is usually via the Mudigere / Charmadi side — confirm locally.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -726,13 +778,20 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "mudigere",
+       "difficulty": "difficult",
+       "durationMin": 360,
+       "distanceKm": 90,
+-      "bestTime": "October – February"
++      "bestTime": "October – February",
++      "elevation": "approx. 4,265 ft",
++      "nearestAttractions": "Mudigere, Devaramane, Charmadi Ghat",
++      "distanceNote": "Tourism brochure lists 25 km from Chikkamagaluru; practical road+trail access is usually via the Mudigere / Charmadi side — confirm locally."
+     },
+     {
+       "id": "gangamoola",
+@@ -775,9 +834,9 @@ window.CKM = {
+       "lng": 75.2652,
+       "elevation": "1,894 m",
+       "image": "assets/kudremukh.jpg",
+-      "blurb": "The horse-face mountain that gives the national park its name.",
+-      "summary": "Kudremukh, ‘horse face’ in Kannada, is a distinctive peak in the Western Ghats, about 95 kilometres southwest of Chikkamagaluru town. The district note places it at roughly 1,894 metres, chained to neighbouring hills by deep valleys.",
+-      "visit": "The peak lies inside Kudremukh National Park. Forest-department permission is generally required for treks. Do not treat informal trail notes as a permit. Check the Karnataka Forest Department before planning.",
++      "blurb": "One of Karnataka’s great Western Ghats treks to a high Kudremukh summit.",
++      "summary": "Kudremukh Peak, about 81 km from Chikkamagaluru by the brochure, is among the finest trekking experiences in South India and leads toward the third-highest peak in Karnataka. Trails pass grasslands, forests, streams and ridges with rich biodiversity. Nearest attractions: Netravathi Peak, Kalasa, Hanumanagundi Falls.",
++      "visit": "The peak lies inside Kudremukh National Park. Forest-department permission is generally required for treks. Do not treat informal trail notes as a permit. Check the Karnataka Forest Department before planning. Best route: Approach via Kudremukh park routes; summit walks are long grassland/forest treks (brochure notes ~22 km trail character through grasslands, forests, streams and ridges).",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -795,13 +854,19 @@ window.CKM = {
+         {
+           "label": "Karnataka Forest Department",
+           "url": "https://aranya.gov.in/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kalasa",
+       "difficulty": "difficult",
+       "durationMin": 480,
+-      "distanceKm": 95,
+-      "bestTime": "October – February"
++      "distanceKm": 81,
++      "bestTime": "October – February",
++      "bestRoute": "Approach via Kudremukh park routes; summit walks are long grassland/forest treks (brochure notes ~22 km trail character through grasslands, forests, streams and ridges)",
++      "nearestAttractions": "Netravathi Peak, Kalasa, Hanumanagundi Falls"
+     },
+     {
+       "id": "mullayanagiri",
+@@ -813,9 +878,9 @@ window.CKM = {
+       "lng": 75.7214,
+       "elevation": "1,930 m",
+       "image": "assets/mullayanagiri.jpg?v=peaks1",
+-      "blurb": "Karnataka’s highest peak, a grass-and-shola ridge in the Baba Budan Giri range.",
+-      "summary": "Mullayanagiri stands 1,930 metres above sea level in the Chandra Drona / Baba Budan Giri range. The Chikkamagaluru district administration notes a temple on the summit, a narrow hill road, and a final walk from the road head. On clear days the Arabian Sea is sometimes visible from the top.",
+-      "visit": "The approach road is narrow with steep drops. Driving all the way to the temple is not always possible; the last stretch is typically walked. Road conditions, weather and any temporary closures should be checked locally before you go.",
++      "blurb": "Karnataka’s highest peak at 1,930 m — mist, coffee hills and a summit shrine.",
++      "summary": "Mullayanagiri is the highest peak in Karnataka at 1,930 metres above sea level, about 20 km from Chikkamagaluru. Surrounded by mist-covered hills and coffee plantations, it is one of the district’s most visited viewpoints for sunrise and sunset. Mullappa Swamy Temple stands at the summit. Nearest attractions: Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri.",
++      "visit": "The approach road is narrow with steep drops. Driving all the way to the temple is not always possible; the last stretch is typically walked. Road conditions, weather and any temporary closures should be checked locally before you go. Best route: Scenic mountain roads toward the ridge; last stretch often walked to the summit temple.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -829,13 +894,19 @@ window.CKM = {
+         {
+           "label": "District tourism note",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "moderate",
+       "durationMin": 120,
+-      "distanceKm": 16,
+-      "bestTime": "September – February"
++      "distanceKm": 20,
++      "bestTime": "September – February",
++      "bestRoute": "Scenic mountain roads toward the ridge; last stretch often walked to the summit temple",
++      "nearestAttractions": "Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri"
+     },
+     {
+       "id": "seethalayyanagiri",
+@@ -877,8 +948,8 @@ window.CKM = {
+       "lat": 13.7425,
+       "lng": 75.8889,
+       "image": "assets/amruthapura.jpg",
+-      "blurb": "A 1196 CE Hoysala temple built under Veera Ballala II.",
+-      "summary": "The Amrutesvara temple in Amruthapura village, north of Chikkamagaluru, was built in 1196 CE by commander Amrutheshwara Dandanayaka under Hoysala king Veera Ballala II. It is a fine, relatively intact Hoysala shrine.",
++      "blurb": "12th-century Hoysala Shiva temple near Tarikere — soapstone epics in stone.",
++      "summary": "Amrutheshwara Temple at Amruthapura, about 74 km from Chikkamagaluru near Tarikere, is a magnificent Hoysala monument of the 12th century dedicated to Lord Shiva. It is renowned for intricate soapstone carvings of the Ramayana and Mahabharata and beautifully sculpted pillars. Nearest attractions: Tarikere, Lakkavalli Dam, Kemmanagundi.",
+       "visit": "A straightforward heritage stop off the Shimoga / NH side of the district. Follow ASI or local temple notices for photography and inner access.",
+       "seasons": [
+         "winter",
+@@ -893,13 +964,99 @@ window.CKM = {
+         {
+           "label": "District / heritage record",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "easy",
+       "durationMin": 60,
+-      "distanceKm": 67,
+-      "bestTime": "All year"
++      "distanceKm": 74,
++      "bestTime": "All year",
++      "nearestAttractions": "Tarikere, Lakkavalli Dam, Kemmanagundi"
++    },
++    {
++      "id": "devarunda-rameshwara",
++      "name": "Devarunda Prasanna Rameshwara Temple",
++      "kannada": "ದೇವರುಂದ ರಾಮೇಶ್ವರ",
++      "category": "temples",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.14,
++      "lng": 75.64,
++      "image": "assets/belavadi.jpg",
++      "distanceKm": 55,
++      "bestTime": "All year",
++      "difficulty": "easy",
++      "durationMin": 90,
++      "blurb": "“Dakshina Kashi” of Mudigere — an ancient Shiva shrine in Malnad green.",
++      "summary": "Devarunda Prasanna Rameshwara Temple near Mudigere, about 55 km from Chikkamagaluru, is popularly known as Dakshina Kashi. The brochure describes a revered ancient Lord Shiva shrine, believed to be over 500 years old, with several deities in the complex and a serene cultural setting in lush Mudigere landscapes.",
++      "visit": "Living temple — dress and photography follow temple rules.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "summer"
++      ],
++      "tags": [
++        "temple",
++        "shiva",
++        "mudigere"
++      ],
++      "near": "Mudigere",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
++    {
++      "id": "deviramma-temple",
++      "name": "Deviramma Temple, Mallenahalli",
++      "kannada": "ದೇವಿರಮ್ಮ ದೇವಸ್ಥಾನ, ಮಲ್ಲೇನಹಳ್ಳಿ",
++      "category": "temples",
++      "taluk": "Chikkamagaluru",
++      "lat": 13.452,
++      "lng": 75.778,
++      "image": "assets/deviramma-temple.jpg",
++      "blurb": "Hill-country shrine of Goddess Deviramma — major Deepavali pilgrimage.",
++      "summary": "Shri Kshetra Bindiga Deviramma Temple sits in the Western Ghats hills near the Mullayanagiri country, about 20 km from Chikkamagaluru. Dedicated to Goddess Deviramma, it is renowned for its hill setting and an annual Deepavali festival that draws thousands of devotees, with panoramic views of surrounding hills and valleys.",
++      "visit": "The Mallenahalli temple is the everyday access. The peak temple is described locally as festival-time only. Dress, photography and festival dates follow the shrine, not this page. Confirm access on the district tourism note before you go. Best route: Scenic route toward the Bindiga / Mallenahalli Deviramma shrine. Nearest attractions: Deviramma Hill, Mullayanagiri.",
++      "seasons": [
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "heritage",
++        "temple"
++      ],
++      "sources": [
++        {
++          "label": "District tourism note",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Photograph, Bindiga estate road, Mallenahalli",
++          "url": "https://commons.wikimedia.org/wiki/File:DEVIRAMMA_TEMPLE.jpg"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ],
++      "talukId": "chikkamagaluru",
++      "difficulty": "easy",
++      "durationMin": 60,
++      "distanceKm": 20,
++      "bestTime": "October – February",
++      "bestRoute": "Scenic route toward the Bindiga / Mallenahalli Deviramma shrine",
++      "nearestAttractions": "Deviramma Hill, Mullayanagiri"
+     },
+     {
+       "id": "hariharapura-sharada-peetham",
+@@ -941,8 +1098,8 @@ window.CKM = {
+       "lat": 13.2766,
+       "lng": 75.3452,
+       "image": "assets/horanadu.jpg",
+-      "blurb": "A forest-wrapped shrine to the goddess of food, in a fold of the ghats.",
+-      "summary": "Horanadu’s Annapoorneshwari temple sits in a valley embraced by hills. It is a major Malnad pilgrimage, known for annadana (temple meals) offered to visitors.",
++      "blurb": "Annapoorneshwari at Horanadu — Western Ghats pilgrimage known for annadana.",
++      "summary": "Sri Annapoorneshwari Temple at Horanadu, about 100 km from Chikkamagaluru on the banks of the Bhadra amid Western Ghats forests and coffee hills, draws thousands of devotees. It is widely known for the tradition of serving free meals to all visitors. Nearest attractions: Kalasa, Kudremukh, Bhadra River.",
+       "visit": "Ghat roads from Mudigere or Kalasa are winding. Temple meal times, dress codes and any online seva are published by the temple administration, use their notices, not third-party lists.",
+       "seasons": [
+         "winter",
+@@ -956,13 +1113,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kalasa",
+       "difficulty": "easy",
+       "durationMin": 120,
+       "distanceKm": 100,
+-      "bestTime": "September – February"
++      "bestTime": "September – February",
++      "nearestAttractions": "Kalasa, Kudremukh, Bhadra River"
+     },
+     {
+       "id": "kalasa",
+@@ -973,8 +1135,8 @@ window.CKM = {
+       "lat": 13.2322,
+       "lng": 75.3582,
+       "image": "assets/kalasa.jpg",
+-      "blurb": "A Shiva temple town on the way to Horanadu, sometimes called a Dakshina Kashi of this valley.",
+-      "summary": "Kalasa is a small temple town near Horanadu. The Kalaseshwara temple is dedicated to Shiva; the settlement sits among coffee and cardamom hills.",
++      "blurb": "Kalaseshwara on the Bhadra — Malnad Shiva shrine and famous Rathotsava.",
++      "summary": "Kalaseshwara Temple at Kalasa stands on the banks of the Bhadra River, about 92 km from Chikkamagaluru, surrounded by Malnad hills. Dedicated to Lord Shiva with a sacred Linga and traditional South Indian architecture, it is known for its annual Rathotsava festival. Nearest attractions: Horanadu, Kudremukh, Bhadra River.",
+       "visit": "Often combined with Horanadu on the same ghat circuit. Confirm road status in monsoon.",
+       "seasons": [
+         "winter",
+@@ -988,13 +1150,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kalasa",
+       "difficulty": "easy",
+       "durationMin": 90,
+       "distanceKm": 92,
+-      "bestTime": "September – February"
++      "bestTime": "September – February",
++      "nearestAttractions": "Horanadu, Kudremukh, Bhadra River"
+     },
+     {
+       "id": "kodandarama-temple-hiremagalur",
+@@ -1005,8 +1172,8 @@ window.CKM = {
+       "lat": 13.3057,
+       "lng": 75.7957,
+       "image": "assets/hiremagalur-kodandarama.jpg",
+-      "blurb": "The town temple where Sita stands on Rama's right, an arrangement you will not find elsewhere.",
+-      "summary": "The town temple where Sita stands on Rama's right, an arrangement you will not find elsewhere.",
++      "blurb": "Hiremagalur’s Rama shrine — life-sized single-stone idols in Kalyana Kolam.",
++      "summary": "Kodanda Ramaswamy Temple at Hiremagalur, about 3 km from Chikkamagaluru, is among Karnataka’s most revered Rama temples. Life-sized idols of Rama, Sita and Lakshmana are sculpted from a single stone, with Sita standing to Rama’s right in the divine Kalyana Kolam. The shrine shows Hoysala style with Dravidian influences — ornate pillars, gopurams and stone carving. Nearest attractions: Hiremagalur Temple Complex, Mullayanagiri, Mahatma Gandhi Park.",
+       "visit": "The Kodandarama temple at Hiremagalur, just south of town. Dress and inner-sanctum rules are the temple’s. No fee is quoted here.",
+       "seasons": [
+         "winter",
+@@ -1019,13 +1186,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 40,
+-      "distanceKm": 2,
+-      "bestTime": "All year"
++      "distanceKm": 3,
++      "bestTime": "All year",
++      "nearestAttractions": "Hiremagalur Temple Complex, Mullayanagiri, Mahatma Gandhi Park"
+     },
+     {
+       "id": "kopada-veerabhadra-temple",
+@@ -1058,6 +1230,46 @@ window.CKM = {
+       "distanceKm": 75,
+       "bestTime": "October – February"
+     },
++    {
++      "id": "hirenallur-mallikarjuna",
++      "name": "Mallikarjuna Temple, Hirenallur",
++      "kannada": "ಹಿರೇನಲ್ಲೂರು ಮಲ್ಲಿಕಾರ್ಜುನ",
++      "category": "temples",
++      "taluk": "Kadur",
++      "talukId": "kadur",
++      "lat": 13.55,
++      "lng": 76.05,
++      "image": "assets/amruthapura.jpg",
++      "distanceKm": 57,
++      "bestTime": "All year",
++      "difficulty": "easy",
++      "durationMin": 90,
++      "blurb": "ASI-protected Hoysala Shiva temple near Kadur — quieter than the famous twins.",
++      "summary": "Mallikarjuna Temple at Hirenallur, about 57 km from Chikkamagaluru (roughly 12 km from Kadur), is a lesser-known but architecturally significant Hoysala-era temple dedicated to Lord Shiva as Mallikarjuna. It is protected by the Archaeological Survey of India. Nearest attractions: Kadur, Belavadi, Amruthapura, Chikkamagaluru.",
++      "visit": "Heritage monument — follow ASI / temple guidance on site.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "summer"
++      ],
++      "tags": [
++        "temple",
++        "hoysala",
++        "asi"
++      ],
++      "near": "Hirenallur village (about 12 km from Kadur)",
++      "nearestAttractions": "Kadur, Belavadi, Amruthapura, Chikkamagaluru",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "yagati-mallikarjuna-temple",
+       "name": "Mallikarjuna Temple, Yagati",
+@@ -1089,6 +1301,46 @@ window.CKM = {
+       "distanceKm": 100,
+       "bestTime": "November – February"
+     },
++    {
++      "id": "marle-twin-temples",
++      "name": "Marle Twin Temples",
++      "kannada": "ಮರ್ಳೆ ದೇವಾಲಯಗಳು",
++      "category": "temples",
++      "taluk": "Chikkamagaluru",
++      "talukId": "chikkamagaluru",
++      "lat": 13.28,
++      "lng": 75.85,
++      "image": "assets/belavadi.jpg",
++      "distanceKm": 12,
++      "bestTime": "All year",
++      "difficulty": "easy",
++      "durationMin": 90,
++      "blurb": "Hoysala twin shrines at Marle — Chennakeshava and Siddeshwara, c. 1150 CE.",
++      "summary": "Marle Twin Temples, about 12 km from Chikkamagaluru, are hidden Hoysala gems: Shri Chennakeshava Temple and Siddeshwara Temple, built around 1150 CE and dedicated to Vishnu and Shiva. Intricate stone carving makes them an excellent example of medieval Karnataka architecture. Nearest attractions: Belur, Halebeedu, Veeranarayana Temple.",
++      "visit": "Heritage temples — follow on-site ASI / temple guidance.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "summer"
++      ],
++      "tags": [
++        "temple",
++        "hoysala",
++        "twin-temples"
++      ],
++      "near": "Marle",
++      "nearestAttractions": "Belur, Halebeedu, Veeranarayana Temple",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "balehonnur-rambhapuri-peetha",
+       "name": "Rambhapuri Peetha, Balehonnur",
+@@ -1098,8 +1350,8 @@ window.CKM = {
+       "lat": 13.3479,
+       "lng": 75.4617,
+       "image": "assets/balehonnur.jpg",
+-      "blurb": "The oldest of the five Veerashaiva Panchapeethas, on the bank of the Bhadra.",
+-      "summary": "The oldest of the five Veerashaiva Panchapeethas, on the bank of the Bhadra.",
++      "blurb": "One of Veerashaivism’s five Pancha Mahapeethas on the Tunga at Balehonnur.",
++      "summary": "Shri Jagadhguru Rambhapuri Peetha at Balehonnur stands on the banks of the Tunga River, about 50 km from Chikkamagaluru. It is one of the five sacred Pancha Mahapeethas of Veerashaivism, founded by Jagadguru Renukacharya, and preserves centuries-old Veerashaiva–Lingayat traditions in a serene riverside setting. Nearest attractions: Bhadra Wildlife Sanctuary, Devaramane, Kalaseshwara Temple.",
+       "visit": "Rambhapuri Peetha at Balehonnur, on the Bhadra, one of the Veerashaiva panchapeethas. Temple timings are theirs to set.",
+       "seasons": [
+         "winter",
+@@ -1112,13 +1364,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "nrpura",
+       "difficulty": "easy",
+       "durationMin": 50,
+-      "distanceKm": 55,
+-      "bestTime": "October – February"
++      "distanceKm": 50,
++      "bestTime": "October – February",
++      "nearestAttractions": "Bhadra Wildlife Sanctuary, Devaramane, Kalaseshwara Temple"
+     },
+     {
+       "id": "kigga-rishyashringa-temple",
+@@ -1182,6 +1439,45 @@ window.CKM = {
+       "distanceKm": 95,
+       "bestTime": "October – February"
+     },
++    {
++      "id": "khandya-markandeshwara",
++      "name": "Sri Markandeshwara Temple, Khandya",
++      "kannada": "ಖಂಡ್ಯ ಮಾರ್ಕಂಡೇಶ್ವರ",
++      "category": "temples",
++      "taluk": "Chikkamagaluru",
++      "talukId": "chikkamagaluru",
++      "lat": 13.4,
++      "lng": 75.85,
++      "image": "assets/belavadi.jpg",
++      "distanceKm": 44,
++      "bestTime": "All year",
++      "difficulty": "easy",
++      "durationMin": 90,
++      "blurb": "Post-Vijayanagara Shiva temple in the hills — granite work and local legend.",
++      "summary": "Sri Markandeshwara Temple at Khandya, about 44 km from Chikkamagaluru, is a revered Shiva temple of Post-Vijayanagara architecture in scenic hill surroundings. It is associated with Sage Mallikarjuna and local legends, with intricate granite carvings and sculptures — a historic cultural landmark of the region.",
++      "visit": "Living temple — dress and conduct follow temple custom.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "summer"
++      ],
++      "tags": [
++        "temple",
++        "shiva",
++        "heritage"
++      ],
++      "near": "Khandya",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "sringeri",
+       "name": "Sringeri Sharadamba Temple",
+@@ -1191,8 +1487,8 @@ window.CKM = {
+       "lat": 13.4157,
+       "lng": 75.2515,
+       "image": "assets/sringeri.jpg",
+-      "blurb": "Adi Shankara’s southern matha on the Tunga, a centre of Advaita learning.",
+-      "summary": "Sringeri is home to the Dakṣiṇāmnāya Śrī Śāradā Pīṭham, traditionally founded by Ādi Śaṅkara. The Sharadamba temple stands on the Tunga, with the matha across the river.",
++      "blurb": "Adi Shankaracharya’s Sharadamba Peetha on the Tunga — wisdom’s southern seat.",
++      "summary": "Sringeri Sharadamba Temple, about 90 km from Chikkamagaluru on the Tunga River, was established by Sri Adi Shankaracharya in the 8th century. It is one of the four sacred Peethas he founded and is dedicated to Goddess Sharadamba, deity of wisdom and learning. Nearest attractions: Vidyashankara Temple, Sirimane Falls, Kigga.",
+       "visit": "This is a living religious centre. Dress modestly, follow matha notices for darshan, and treat published timings on the official Sringeri site as the source of truth, not this companion.",
+       "seasons": [
+         "winter",
+@@ -1212,13 +1508,18 @@ window.CKM = {
+         {
+           "label": "Sringeri Sharada Peetham",
+           "url": "https://www.sringeri.net/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "sringeri",
+       "difficulty": "easy",
+       "durationMin": 120,
+       "distanceKm": 90,
+-      "bestTime": "September – February"
++      "bestTime": "September – February",
++      "nearestAttractions": "Vidyashankara Temple, Sirimane Falls, Kigga"
+     },
+     {
+       "id": "belavadi",
+@@ -1229,8 +1530,8 @@ window.CKM = {
+       "lat": 13.2836,
+       "lng": 75.9972,
+       "image": "assets/belavadi.jpg",
+-      "blurb": "A Hoysala trikuta temple of lathe-turned pillars, east of town toward Halebidu.",
+-      "summary": "Belavadi village, about 29 kilometres from Chikkamagaluru, is known for the Veeranarayana temple, a Hoysala trikuta (three-shrine) construction with an open mantapa of lathe-turned pillars.",
++      "blurb": "13th-century Hoysala trikuta at Belavadi — Veeranarayana, Yoga Narasimha, Venugopala.",
++      "summary": "Veeranarayana Temple in historic Belavadi, about 29 km from Chikkamagaluru, is one of the finest Hoysala temples of the 13th century, dedicated to Lord Vishnu. It houses shrines of Veeranarayana, Yoga Narasimha and Venugopala, with exquisite stone carvings and sculpted pillars. Nearest attractions: Halebidu, Belur, Marle Twin Temples.",
+       "visit": "Pairs well with a Halebidu / Belur heritage day, which lies just outside this district. Check daylight hours; village temples may close for puja.",
+       "seasons": [
+         "winter",
+@@ -1245,13 +1546,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 60,
+       "distanceKm": 29,
+-      "bestTime": "All year"
++      "bestTime": "All year",
++      "nearestAttractions": "Halebidu, Belur, Marle Twin Temples"
+     },
+     {
+       "id": "vidyashankara",
+@@ -1285,6 +1591,46 @@ window.CKM = {
+       "distanceKm": 95,
+       "bestTime": "September – February"
+     },
++    {
++      "id": "baggavalli-yoganarasimha",
++      "name": "Yoganarasimhaswamy Temple, Baggavalli",
++      "kannada": "ಬಗ್ಗವಳ್ಳಿ ಯೋಗನರಸಿಂಹ",
++      "category": "temples",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.2,
++      "lng": 75.58,
++      "image": "assets/belavadi.jpg",
++      "distanceKm": 61,
++      "bestTime": "All year",
++      "difficulty": "easy",
++      "durationMin": 90,
++      "blurb": "Hoysala-period shrine at Baggavalli — once Keshava, now famed for Yoganarasimha.",
++      "summary": "Yoganarasimhaswamy Temple in Baggavalli village (Mudigere Taluk), about 61 km from Chikkamagaluru, is an important Hoysala-period monument. Originally dedicated to Lord Keshava, it features sculptures of Yoganarasimha, Lakshmi and Ganesha and stands as a fine example of Hoysala craft in the taluk. Nearest attractions: Mudigere, Devaramane, Ettina Bhuja.",
++      "visit": "Living / heritage temple setting — follow local rules.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "summer"
++      ],
++      "tags": [
++        "temple",
++        "hoysala",
++        "narasimha"
++      ],
++      "near": "Baggavalli village, Mudigere Taluk",
++      "nearestAttractions": "Mudigere, Devaramane, Ettina Bhuja",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "amedikallu",
+       "name": "Amedikallu",
+@@ -1326,8 +1672,8 @@ window.CKM = {
+       "lng": 75.4152,
+       "image": "assets/bandaje-falls.jpg",
+       "blurb": "Two days from Sunkasale over Ballalarayana Durga and down past the falls to Ujire, the finest walk in these hills.",
+-      "summary": "Two days from Sunkasale over Ballalarayana Durga and down past the falls to Ujire, the finest walk in these hills.",
+-      "visit": "A long ridge walk linking Ballalarayana Durga toward the Bandaje falls country. Treat it as a serious trek: water, daylight, and local advice, not a jeep outing listed here.",
++      "summary": "Two days from Sunkasale over Ballalarayana Durga and down past Bandaje Falls toward Ujire — among the finest ridge walks in these hills. The tourism brochure also highlights Bandaje Falls itself (near Rani Jhari, Sunkasale Grama Panchayat) as a spectacular trek destination with forest trails and Western Ghats views.",
++      "visit": "A long ridge walk linking Ballalarayana Durga toward the Bandaje falls country. Treat it as a serious trek: water, daylight, and local advice, not a jeep outing listed here. Best route: Approaches via SH66 / SH64 toward Sunkasale / Rani Jhari country.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -1339,13 +1685,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "mudigere",
+       "difficulty": "difficult",
+       "durationMin": 720,
+       "distanceKm": 85,
+-      "bestTime": "November – February"
++      "bestTime": "November – February",
++      "bestRoute": "Approaches via SH66 / SH64 toward Sunkasale / Rani Jhari country"
+     },
+     {
+       "id": "gangadikal-peak",
+@@ -1440,6 +1791,41 @@ window.CKM = {
+       "distanceKm": 98,
+       "bestTime": "October – February"
+     },
++    {
++      "id": "kyatanamakki",
++      "name": "Kyatanamakki Hill",
++      "kannada": "ಕ್ಯಾತನಮಕ್ಕಿ",
++      "category": "treks",
++      "taluk": "Sringeri",
++      "talukId": "sringeri",
++      "lat": 13.45,
++      "lng": 75.25,
++      "image": "assets/kudremukh-np.jpg",
++      "bestTime": "November – February",
++      "difficulty": "moderate",
++      "durationMin": 300,
++      "blurb": "A brochure-listed hill trek on the Sringeri / Western Ghats side.",
++      "summary": "Kyatanamakki Hill Trek is named in the Department of Tourism brochure’s trekking and viewpoints list for Chikkamagaluru, together with trails such as Mullayanagiri, Kudremukh and Narasimha Parvatha. Expect grassland and shola country — confirm season and any forest guidance before you go.",
++      "visit": "Daylight trek. Weather on the ghats changes quickly.",
++      "seasons": [
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "trek",
++        "hill"
++      ],
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "meruthi-gudda",
+       "name": "Meruthi Gudda",
+@@ -1471,6 +1857,42 @@ window.CKM = {
+       "distanceKm": 88,
+       "bestTime": "October – February"
+     },
++    {
++      "id": "narasimha-parvatha",
++      "name": "Narasimha Parvatha",
++      "kannada": "ನರಸಿಂಹ ಪರ್ವತ",
++      "category": "treks",
++      "taluk": "Sringeri",
++      "talukId": "sringeri",
++      "lat": 13.4,
++      "lng": 75.2,
++      "image": "assets/kudremukh-np.jpg",
++      "distanceKm": 110,
++      "bestTime": "November – February",
++      "difficulty": "challenging",
++      "durationMin": 600,
++      "blurb": "A classic Sringeri-side Western Ghats trek named in the district trek list.",
++      "summary": "Narasimha Parvatha is listed among Chikkamagaluru’s major trekking and viewpoint trails in the Department of Tourism brochure, alongside Mullayanagiri, Kudremukh and Netravathi Peak. It is a serious Western Ghats walk on the Sringeri / Agumbe side of the district — permits, weather and local guidance come first.",
++      "visit": "Confirm forest permits and season before attempting. Not a casual day outing from town.",
++      "seasons": [
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "trek",
++        "western-ghats"
++      ],
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "netravathi-peak",
+       "name": "Netravathi Peak",
+@@ -1480,9 +1902,9 @@ window.CKM = {
+       "lat": 13.16,
+       "lng": 75.24,
+       "image": "assets/netravathi-peak.jpg",
+-      "blurb": "A long grassland walk above the Netravathi's headwaters, with the coastal plain in view.",
+-      "summary": "A long grassland walk above the Netravathi's headwaters, with the coastal plain in view.",
+-      "visit": "A grassland walk above the Netravathi headwaters. Park rules and the monsoon decide access. Confirm at a forest counter.",
++      "blurb": "A Kudremukh-range trek named for the Netravathi River’s birth hills.",
++      "summary": "Netravathi Peak lies in the Kudremukh Forest Range. Named after the sacred Netravathi River that originates in this region, the trek (brochure elevation about 4,100 ft) moves through shola forest, streams and rolling grassland with views toward Kudremukh Peak and Rani Jhari Valley. Nearest attractions: Kudremukh, Rani Jhari Viewpoint, Kalasa.",
++      "visit": "A grassland walk above the Netravathi headwaters. Park rules and the monsoon decide access. Confirm at a forest counter. Best route: Trek through Kudremukh Forest Range — shola forests, streams and grasslands.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -1494,13 +1916,20 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kalasa",
+       "difficulty": "moderate",
+       "durationMin": 420,
+-      "distanceKm": 92,
+-      "bestTime": "November – February"
++      "distanceKm": 95,
++      "bestTime": "November – February",
++      "elevation": "approx. 4,100 ft",
++      "bestRoute": "Trek through Kudremukh Forest Range — shola forests, streams and grasslands",
++      "nearestAttractions": "Kudremukh, Rani Jhari Viewpoint, Kalasa"
+     },
+     {
+       "id": "charmadi",
+@@ -1534,6 +1963,46 @@ window.CKM = {
+       "distanceKm": 70,
+       "bestTime": "September – February; spectacular but risky in heavy monsoon"
+     },
++    {
++      "id": "devaramane-viewpoint",
++      "name": "Devaramane Viewpoint",
++      "kannada": "ದೇವರಮನೆ",
++      "category": "viewpoints",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.09,
++      "lng": 75.54,
++      "image": "assets/kemmanagundi.jpg",
++      "distanceKm": 52,
++      "bestRoute": "Short trek from the Kalabhairaveshwara Temple",
++      "bestTime": "Monsoon and post-monsoon",
++      "difficulty": "easy",
++      "durationMin": 120,
++      "blurb": "Grassland views above Mudigere — a short walk from Kalabhairaveshwara Temple.",
++      "summary": "Devaramane Viewpoint (Devaramane Betta), about 52 km from Chikkamagaluru near the Kalabhairaveshwara Temple, is a hidden gem of rolling grasslands and panoramic Western Ghats views. Ideal in monsoon and post-monsoon. Distinct from Deviramma Betta near the Mullayanagiri side. Nearest attractions: Kalabhairaveshwara Temple, Panchami Kallu, Mudigere.",
++      "visit": "Short temple-side trek. Mist can erase the view quickly in the rains. Best route: Short trek from the Kalabhairaveshwara Temple.",
++      "seasons": [
++        "monsoon",
++        "post-monsoon"
++      ],
++      "tags": [
++        "viewpoint",
++        "grassland",
++        "mudigere"
++      ],
++      "near": "Kalabhairaveshwara Temple",
++      "nearestAttractions": "Kalabhairaveshwara Temple, Panchami Kallu, Mudigere",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "kavikal-gandi",
+       "name": "Kavikal Gandi Viewpoint",
+@@ -1565,6 +2034,86 @@ window.CKM = {
+       "distanceKm": 18,
+       "bestTime": "October – February"
+     },
++    {
++      "id": "panchami-kallu",
++      "name": "Panchami Kallu",
++      "kannada": "ಪಂಚಮಿ ಕಲ್ಲು",
++      "category": "viewpoints",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.1,
++      "lng": 75.55,
++      "image": "assets/z-point.jpg",
++      "distanceKm": 55,
++      "bestTime": "September – February",
++      "difficulty": "moderate",
++      "durationMin": 180,
++      "blurb": "A quieter rock viewpoint near Devaramane and Kogre — coffee hills and valleys.",
++      "summary": "Panchami Kallu is a lesser-known hilltop viewpoint about 55 km from Chikkamagaluru, near Devaramane and Kogre village. Surrounded by forests, coffee estates and valleys, it offers a serene trek away from crowds, with a unique rock viewpoint and panoramic Western Ghats views. Nearest attractions: Devaramane Viewpoint, Mudigere, Kalabhairaveshwara Temple.",
++      "visit": "Carry water and keep to daylight. Trails can be unclear — ask at Devaramane / Kogre.",
++      "seasons": [
++        "winter",
++        "post-monsoon",
++        "monsoon"
++      ],
++      "tags": [
++        "viewpoint",
++        "trek",
++        "coffee-country"
++      ],
++      "near": "Devaramane and Kogre village",
++      "nearestAttractions": "Devaramane Viewpoint, Mudigere, Kalabhairaveshwara Temple",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
++    {
++      "id": "rani-jhari-viewpoint",
++      "name": "Rani Jhari Viewpoint",
++      "kannada": "ರಾಣಿ ಝರಿ",
++      "category": "viewpoints",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.15,
++      "lng": 75.35,
++      "image": "assets/kudremukh-np.jpg",
++      "distanceKm": 70,
++      "bestTime": "Monsoon and clear winter mornings",
++      "difficulty": "moderate",
++      "durationMin": 180,
++      "blurb": "One of the Western Ghats’ great valley viewpoints — mist, grass and monsoon drama.",
++      "summary": "Rani Jhari is among the most breathtaking viewpoints in the Western Ghats, about 70 km from Chikkamagaluru. Surrounded by valleys, forests and grasslands, it is especially beautiful in the monsoon and a favourite for sunrise, sunset and photography. Not the same place as Jhari (Buttermilk) Falls near Attigundi. Nearest attractions: Kudremukh, Netravathi Peak, Durgadahalli.",
++      "visit": "Exposed viewpoints — wind and cloud move fast. Keep daylight margin.",
++      "seasons": [
++        "monsoon",
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "viewpoint",
++        "photography",
++        "monsoon"
++      ],
++      "near": "Kudremukh / Netravathi Peak area",
++      "nearestAttractions": "Kudremukh, Netravathi Peak, Durgadahalli",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
+     {
+       "id": "z-point",
+       "name": "Z Point",
+@@ -1574,9 +2123,9 @@ window.CKM = {
+       "lat": 13.5557,
+       "lng": 75.7631,
+       "image": "assets/z-point.jpg",
+-      "blurb": "A short walk from Kemmanagundi onto a knife-edge view of shola grassland.",
+-      "summary": "The district administration describes Z Point as roughly a ten-minute walk from Kemmanagundi, with an aerial view of Western Ghats shola grasslands. The path is exposed in places.",
+-      "visit": "Wear shoes with grip; mist and wind can close the view without warning. There is no ticket information published here, treat this as a landscape walk, not a managed attraction with fixed hours.",
++      "blurb": "Kemmanagundi’s famous sunrise knife-edge over Western Ghats valleys.",
++      "summary": "Z Point is a popular trekking viewpoint near Kemmanagundi, about 67 km from Chikkamagaluru city in the brochure. It is known for spectacular sunrise views and panoramic Western Ghats vistas. The walk is generally easy for most visitors and passes forest and waterfall scenery. Nearest attractions: Kemmanagundi, Shanti Falls, Hebbe Falls.",
++      "visit": "Wear shoes with grip; mist and wind can close the view without warning. There is no ticket information published here, treat this as a landscape walk, not a managed attraction with fixed hours. Best route: Trek from Kemmanagundi through forests; the path also passes scenic Shanti Falls country.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -1589,13 +2138,98 @@ window.CKM = {
+         {
+           "label": "District tourism note",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "moderate",
+       "durationMin": 90,
+-      "distanceKm": 57,
+-      "bestTime": "September – February"
++      "distanceKm": 67,
++      "bestTime": "September – February",
++      "bestRoute": "Trek from Kemmanagundi through forests; the path also passes scenic Shanti Falls country",
++      "nearestAttractions": "Kemmanagundi, Shanti Falls, Hebbe Falls"
++    },
++    {
++      "id": "bandaje-falls",
++      "name": "Bandaje Falls",
++      "kannada": "ಬಂಡಾಜೆ ಜಲಪಾತ",
++      "category": "waterfalls",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.12,
++      "lng": 75.42,
++      "image": "assets/bandaje-falls.jpg",
++      "distanceKm": 100,
++      "bestRoute": "Typically via SH66 and SH64 toward the Rani Jhari / Sunkasale side",
++      "bestTime": "November – February",
++      "difficulty": "challenging",
++      "durationMin": 480,
++      "blurb": "A spectacular trek fall near Rani Jhari and Sunkasale — Western Ghats reward.",
++      "summary": "Bandajje / Bandaje Falls near Rani Jhari (Sunkasale Grama Panchayat), about 100 km from Chikkamagaluru, is a spectacular trekking destination of forest trails and pristine landscapes. The challenging walk rewards visitors with views of the waterfall and surrounding Western Ghats. Related ridge walking is also described under the Bandaje Arbi Traverse.",
++      "visit": "Serious trek terrain. Carry water, start early, and prefer local guidance. Not a casual roadside stop. Best route: Typically via SH66 and SH64 toward the Rani Jhari / Sunkasale side. Nearest attractions: Ballalarayana Durga, Rani Jhari, Kudremukh.",
++      "seasons": [
++        "winter",
++        "post-monsoon"
++      ],
++      "tags": [
++        "waterfall",
++        "trek",
++        "rani-jhari"
++      ],
++      "near": "Rani Jhari, Sunkasale Grama Panchayat",
++      "nearestAttractions": "Ballalarayana Durga, Rani Jhari, Kudremukh",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
++    {
++      "id": "elaneer-falls",
++      "name": "Elaneer Falls",
++      "kannada": "ಏಲನೀರು ಜಲಪಾತ",
++      "category": "waterfalls",
++      "taluk": "Kalasa",
++      "talukId": "kalasa",
++      "lat": 13.18,
++      "lng": 75.38,
++      "image": "assets/bandaje-falls.jpg",
++      "distanceKm": 80,
++      "bestRoute": "Drive on SH65 toward Samse; Elaneer Falls is near Samse",
++      "bestTime": "July – January",
++      "difficulty": "moderate",
++      "durationMin": 240,
++      "blurb": "A hidden cascade near Samse — dense forest trek to high, untouched water.",
++      "summary": "Elaneer (Elaneeru) Falls near the village of Samse, about 80 km from Chikkamagaluru, is a hidden treasure of the district. A trek through dense forest paths leads to pure water cascading from great heights in undisturbed Western Ghats nature.",
++      "visit": "Forest trek — weather and daylight matter. Ask in Samse for the current path. Best route: Drive on SH65 toward Samse; Elaneer Falls is near Samse.",
++      "seasons": [
++        "monsoon",
++        "post-monsoon"
++      ],
++      "tags": [
++        "waterfall",
++        "trek",
++        "samse"
++      ],
++      "near": "Samse",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
+     },
+     {
+       "id": "hanuman-gundi",
+@@ -1606,9 +2240,9 @@ window.CKM = {
+       "lat": 13.18,
+       "lng": 75.175,
+       "image": "assets/hanuman-gundi.jpg",
+-      "blurb": "A forest waterfall on the Kudremukh side of the ghats.",
+-      "summary": "Hanuman Gundi (Hanumana Gundi) Falls sits in evergreen forest associated with the Kudremukh landscape. It is a monsoon-fed fall reached through forest roads.",
+-      "visit": "Because it sits in or beside protected forest, access can require forest-department permission and may close in heavy rain. Confirm with official forest sources.",
++      "blurb": "A high cascade inside Kudremukha National Park, named for Lord Hanuman.",
++      "summary": "Hanumanagundi Falls lies in the heart of Kudremukha National Park, about 80 km from Chikkamagaluru city by the tourism brochure. Named after Lord Hanuman, the fall drops from a considerable height. Reaching it means a trek through dense Western Ghats forest, with a chance to see the park’s flora and fauna.",
++      "visit": "Only with valid Kudremukh / forest access. Confirm permits and trail status before you go. This is notified forest, not an open roadside waterfall. Best route: Take SH66 (Chikkamagaluru–Kudremukha Road) toward Kudremukha National Park; follow signs to Hanumana Gundi Falls.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon"
+@@ -1622,13 +2256,18 @@ window.CKM = {
+         {
+           "label": "Karnataka Forest Department",
+           "url": "https://aranya.gov.in/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "kalasa",
+       "difficulty": "moderate",
+       "durationMin": 90,
+-      "distanceKm": 105,
+-      "bestTime": "August – January"
++      "distanceKm": 80,
++      "bestTime": "August – January",
++      "bestRoute": "Take SH66 (Chikkamagaluru–Kudremukha Road) toward Kudremukha National Park; follow signs to Hanumana Gundi Falls"
+     },
+     {
+       "id": "hebbe-falls",
+@@ -1639,28 +2278,35 @@ window.CKM = {
+       "lat": 13.5414,
+       "lng": 75.7254,
+       "image": "assets/hebbe-falls.jpg",
+-      "blurb": "A two-stage fall in coffee country, a short way from Kemmanagundi.",
+-      "summary": "Hebbe Falls lies about ten kilometres from Kemmanagundi, inside coffee-estate country. Water drops in two stages often called Dodda Hebbe and Chikka Hebbe.",
+-      "visit": "Access is commonly via estate roads and local jeep arrangements, and it can close with rain, estate work or forest rules. There is no stable public fee listed here. Ask on the ground and prefer official or estate guidance.",
++      "blurb": "A two-stage fall near Kemmanagundi — Dodda Hebbe and Chikka Hebbe.",
++      "summary": "Hebbe Falls is a mesmerizing waterfall reached from the Kemmanagundi side (about 10 km from Kemmanagundi). Water drops in two stages, Dodda Hebbe (Big Falls) and Chikka Hebbe (Small Falls). The Department of Tourism notes the monsoon months (June–September) as the peak flow season, with swimming and nature time in a tranquil forest setting when access is open.",
++      "visit": "Access is commonly via estate roads and local jeep arrangements, and it can close with rain, estate work or forest rules. There is no stable public fee listed here. Ask on the ground and prefer official or estate guidance. Best route: Scenic approach via Kemmanagundi; last stretch often by authorised jeep through forest and estate country.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon"
+       ],
+       "tags": [
+         "waterfall",
+-        "jeep"
++        "jeep",
++        "dodda-hebbe",
++        "chikka-hebbe"
+       ],
+       "sources": [
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "moderate",
+       "durationMin": 180,
+       "distanceKm": 63,
+-      "bestTime": "July – December"
++      "bestTime": "June – September (peak flow); also strong through the post-monsoon",
++      "bestRoute": "Scenic approach via Kemmanagundi; last stretch often by authorised jeep through forest and estate country"
+     },
+     {
+       "id": "jhari-falls",
+@@ -1671,9 +2317,9 @@ window.CKM = {
+       "lat": 13.4236,
+       "lng": 75.741,
+       "image": "assets/jhari-falls.jpg",
+-      "blurb": "A wide white sheet of water near the Mullayanagiri–Baba Budangiri massif.",
+-      "summary": "Jhari Falls, also called Buttermilk Falls, sits in the hills near Mullayanagiri and Baba Budangiri. Water fans over rock in a thin, broad layer after rain.",
+-      "visit": "The last stretch is often a jeep track rather than a regular car road. Conditions after monsoon can be difficult. Do not assume year-round access.",
++      "blurb": "Buttermilk Falls near Attigundi — a short trek into forest spray.",
++      "summary": "Jhari Falls at Attigundi is about 24 km from Chikkamagaluru. A short trek from Attigundi leads to this scenic waterfall in dense forest — a refreshing stop on the high-ridge side of the district.",
++      "visit": "The last stretch is often a jeep track rather than a regular car road. Conditions after monsoon can be difficult. Do not assume year-round access. Best route: NH173 to Attigundi; short trek from Attigundi to the falls.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon"
+@@ -1686,13 +2332,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "moderate",
+       "durationMin": 120,
+-      "distanceKm": 22,
+-      "bestTime": "July – January"
++      "distanceKm": 24,
++      "bestTime": "July – January",
++      "bestRoute": "NH173 to Attigundi; short trek from Attigundi to the falls"
+     },
+     {
+       "id": "kadambi-falls",
+@@ -1734,9 +2385,9 @@ window.CKM = {
+       "lat": 13.5348,
+       "lng": 75.7809,
+       "image": "assets/kallathigiri.jpg",
+-      "blurb": "A roadside cascade and shrine on the Kemmanagundi approach.",
+-      "summary": "Kallathigiri (Kalhatti) Falls is a familiar stop on the Kemmanagundi road, with a Veerabhadra shrine associated with the cliff.",
+-      "visit": "The road is narrow. Park considerately and watch for spray on the tarmac in monsoon. Shrine practices are local, dress and behave accordingly.",
++      "blurb": "A cliff cascade into a natural pool, beside Veerabhadra Temple.",
++      "summary": "Kallathigiri Falls (also Kalathigiri / Kalhattagiri) cascades from a rocky cliff into a natural pool, surrounded by coffee estates and forest. The site also holds the Veerabhadra Temple, which draws devotees through the year and hosts an annual fair in March–April.",
++      "visit": "The road is narrow. Park considerately and watch for spray on the tarmac in monsoon. Shrine practices are local, dress and behave accordingly. Best route: Via the Kemmanagundi / Kalathigiri village approaches.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon",
+@@ -1744,19 +2395,64 @@ window.CKM = {
+       ],
+       "tags": [
+         "waterfall",
+-        "shrine"
++        "shrine",
++        "veerabhadra-temple",
++        "fair"
+       ],
+       "sources": [
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "easy",
+       "durationMin": 60,
+       "distanceKm": 56,
+-      "bestTime": "July – February"
++      "bestTime": "July – February",
++      "bestRoute": "Via the Kemmanagundi / Kalathigiri village approaches"
++    },
++    {
++      "id": "kodige-falls",
++      "name": "Kodige Falls",
++      "kannada": "ಕೊಡಿಗೆ ಜಲಪಾತ",
++      "category": "waterfalls",
++      "taluk": "Mudigere",
++      "talukId": "mudigere",
++      "lat": 13.2,
++      "lng": 75.55,
++      "image": "assets/bandaje-falls.jpg",
++      "distanceKm": 60,
++      "bestRoute": "Drive on SH57 toward Durgadahalli, where Kodige Falls is located",
++      "bestTime": "July – January",
++      "difficulty": "moderate",
++      "durationMin": 180,
++      "blurb": "A hidden fall in the Durgadahalli forests and coffee country.",
++      "summary": "Kodige Falls, about 60 km from Chikkamagaluru near Durgadahalli, is a lesser-known gem tucked amidst dense forests and coffee plantations. The brochure describes a journey through lush greenery with the distant sound of flowing water — a serene escape rather than a crowded viewpoint.",
++      "visit": "Confirm the trailhead at Durgadahalli. After heavy rain, paths may be closed or slippery. Best route: Drive on SH57 toward Durgadahalli, where Kodige Falls is located.",
++      "seasons": [
++        "monsoon",
++        "post-monsoon"
++      ],
++      "tags": [
++        "waterfall",
++        "coffee-country"
++      ],
++      "near": "Durgadahalli",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
+     },
+     {
+       "id": "manikyadhara",
+@@ -1767,9 +2463,9 @@ window.CKM = {
+       "lat": 13.4222,
+       "lng": 75.7698,
+       "image": "assets/manikyadhara.jpg",
+-      "blurb": "A sacred cascade on the Baba Budangiri side of the range.",
+-      "summary": "Manikyadhara is a waterfall associated with the Baba Budangiri / Datta Peetha pilgrimage landscape. Flow varies sharply with the monsoon.",
+-      "visit": "Combine only if the ridge road is open and the fall is flowing. Rocks are slippery; there is no substitute for local, current advice.",
++      "blurb": "A sacred cascade near Baba Budangiri, known for clear water and pilgrim visits.",
++      "summary": "Manikyadhara Falls sits near the Shri Guru Dattatreya Bababudan Swamy Dargah ridge. The tourism brochure notes its lush setting, picnic and nature-walk appeal, and a belief in the healing quality of the clear water. A nearby Lord Shiva shrine also draws pilgrims.",
++      "visit": "Combine only if the ridge road is open and the fall is flowing. Rocks are slippery; there is no substitute for local, current advice. Best route: Short trek or scenic drive through the Western Ghats near Shri Guru Dattatreya Bababudan Swamy Dargah.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon"
+@@ -1782,13 +2478,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 45,
+       "distanceKm": 30,
+-      "bestTime": "July – February"
++      "bestTime": "July – February",
++      "bestRoute": "Short trek or scenic drive through the Western Ghats near Shri Guru Dattatreya Bababudan Swamy Dargah"
+     },
+     {
+       "id": "shanti-falls",
+@@ -1799,9 +2500,9 @@ window.CKM = {
+       "lat": 13.5505,
+       "lng": 75.7654,
+       "image": "assets/shanti-falls.jpg",
+-      "blurb": "A small fall on the Z Point path that almost nobody stops at, which is the whole point.",
+-      "summary": "A small fall on the Z Point path that almost nobody stops at, which is the whole point.",
+-      "visit": "A small fall on the Z Point path at Kemmanagundi. Daylight only. Garden and horticulture notices at Kemmanagundi are the practical source.",
++      "blurb": "A peaceful cascade in the Kemmanagundi hill country.",
++      "summary": "Shanthi (Shanti) Falls is a tranquil oasis in the Kemmanagundi hill station landscape, about 60 km from Chikkamagaluru city by the brochure. Surrounded by lush greenery, it is described as a quiet place for rest in pure mountain air.",
++      "visit": "A small fall on the Z Point path at Kemmanagundi. Daylight only. Garden and horticulture notices at Kemmanagundi are the practical source. Best route: SH57 (Chikkamagaluru–Tarikere Road) toward Kemmanagundi for Shanthi Falls.",
+       "seasons": [
+         "winter",
+         "post-monsoon"
+@@ -1813,13 +2514,18 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "tarikere",
+       "difficulty": "moderate",
+       "durationMin": 45,
+-      "distanceKm": 58,
+-      "bestTime": "July – November"
++      "distanceKm": 60,
++      "bestTime": "July – November",
++      "bestRoute": "SH57 (Chikkamagaluru–Tarikere Road) toward Kemmanagundi for Shanthi Falls"
+     },
+     {
+       "id": "sirimane-falls",
+@@ -1830,9 +2536,9 @@ window.CKM = {
+       "lat": 13.3875,
+       "lng": 75.1797,
+       "image": "assets/sirimane-falls.jpg",
+-      "blurb": "A stepped fall in the Sringeri countryside, fullest after the rains.",
+-      "summary": "Sirimane Falls is a popular countryside waterfall near Sringeri, with a stepped cascade through wooded slopes.",
+-      "visit": "Flow is seasonal. Stairs and rocks are slippery. Any entry arrangements are local and change, this page does not list a fee.",
++      "blurb": "A multi-tiered fall in the forests near spiritual Sringeri.",
++      "summary": "Sirimane Falls, about 80 km from Chikkamagaluru toward Sringeri, is a multi-tiered waterfall nestled in lush forest. A short trek through verdant woods leads to the cascade — quieter than the busier east-side falls, and often paired with a Sringeri temple visit.",
++      "visit": "Flow is seasonal. Stairs and rocks are slippery. Any entry arrangements are local and change, this page does not list a fee. Best route: Drive on SH65 toward Sringeri; the falls are near Sringeri.",
+       "seasons": [
+         "monsoon",
+         "post-monsoon"
+@@ -1844,13 +2550,96 @@ window.CKM = {
+         {
+           "label": "District tourism",
+           "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "sringeri",
+       "difficulty": "easy",
+       "durationMin": 90,
+-      "distanceKm": 105,
+-      "bestTime": "August – January"
++      "distanceKm": 80,
++      "bestTime": "August – January",
++      "bestRoute": "Drive on SH65 toward Sringeri; the falls are near Sringeri"
++    },
++    {
++      "id": "soor-mane-falls",
++      "name": "Soor Mane Falls",
++      "kannada": "ಸೂರುಮನೆ ಜಲಪಾತ",
++      "category": "waterfalls",
++      "taluk": "Kalasa",
++      "talukId": "kalasa",
++      "lat": 13.23,
++      "lng": 75.4,
++      "image": "assets/hebbe-falls.jpg",
++      "distanceKm": 65,
++      "bestRoute": "Take NH173 toward Kalasa; the falls are accessible from Kalasa",
++      "bestTime": "July – January",
++      "difficulty": "easy",
++      "durationMin": 120,
++      "blurb": "A quiet Kalasa-side fall — short trek, forests, and popular for photography.",
++      "summary": "Soor Mane (Soormane) Falls near Kalasa, about 65 km from Chikkamagaluru, is a serene lesser-known waterfall surrounded by lush forest. Reached by a short trek, it is a peaceful nature retreat and a popular spot for photography and pre-wedding shoots. Distinct from Sirimane Falls near Sringeri.",
++      "visit": "Not the same place as Sirimane Falls (Sringeri side). Confirm Kalasa-side access locally. Best route: Take NH173 toward Kalasa; the falls are accessible from Kalasa.",
++      "seasons": [
++        "monsoon",
++        "post-monsoon"
++      ],
++      "tags": [
++        "waterfall",
++        "photography",
++        "kalasa"
++      ],
++      "near": "Kalasa",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
++    },
++    {
++      "id": "ukkada-falls",
++      "name": "Ukkada Falls",
++      "kannada": "ಉಕ್ಕಡ ಜಲಪಾತ",
++      "category": "waterfalls",
++      "taluk": "Chikkamagaluru",
++      "talukId": "chikkamagaluru",
++      "lat": 13.42,
++      "lng": 75.68,
++      "image": "assets/hebbe-falls.jpg",
++      "distanceKm": 40,
++      "bestRoute": "Take SH57 to reach Ukkada",
++      "bestTime": "July – January",
++      "difficulty": "moderate",
++      "durationMin": 180,
++      "blurb": "A secluded forest fall about 40 km out on the SH57 side — quiet water and birdsong.",
++      "summary": "Ukkada Falls, about 40 km from Chikkamagaluru city, is described by the tourism brochure as a well-kept secret and a sanctuary for peace. The cascade falls gently into a serene pool. Visitors enjoy about a 2 km forest trek with many bird species along winding paths and quiet landscapes.",
++      "visit": "Forest paths can be slippery after rain. Go in daylight; ask locally for the current trailhead. Best route: Take SH57 to reach Ukkada.",
++      "seasons": [
++        "monsoon",
++        "post-monsoon"
++      ],
++      "tags": [
++        "waterfall",
++        "trek",
++        "birds"
++      ],
++      "near": "Ukkada village",
++      "sources": [
++        {
++          "label": "District tourism",
++          "url": "https://chikkamagaluru.nic.in/en/tourism/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
++        }
++      ]
+     },
+     {
+       "id": "bhadra-wls",
+@@ -1861,9 +2650,9 @@ window.CKM = {
+       "lat": 13.4356,
+       "lng": 75.6425,
+       "image": "assets/bhadra-wls.jpg",
+-      "blurb": "A tiger reserve of teak, bamboo and the Bhadra backwaters.",
+-      "summary": "Bhadra Wildlife Sanctuary is also a tiger reserve, spanning moist deciduous forest around the Bhadra reservoir. Hebbe Giri is among the higher points in the sanctuary landscape.",
+-      "visit": "Safaris, treks and any night-travel rules are forest-department matters. Book and confirm only through official channels. Wild elephants, gaur and other large mammals use these forests and sometimes the roads.",
++      "blurb": "Karnataka tiger country on the Bhadra — 492.46 sq km across 15 state forests.",
++      "summary": "Bhadra Wildlife Sanctuary (Bhadra Tiger Reserve) takes its name from the Bhadra River, which originates near the Kudremukh hills. The Department of Tourism brochure records an area of 492.46 sq km comprising 15 state forests. It is home to tigers, leopards, elephants, gaur, deer and many birds, with dense forest, rolling hills and the scenic river. Popular for wildlife safaris and birdwatching. Nearest attractions include Muthodi Wildlife Range, Lakkavalli Dam, Bhadra Reservoir and Kudremukh.",
++      "visit": "Safari slots and fees are forest-department matters. Book only through official channels such as https://tickets.bhadratigerreserve.in — this companion does not sell tickets. Nearest attractions: Muthodi Wildlife Range, Lakkavalli Dam, Bhadra Reservoir, Kudremukh.",
+       "seasons": [
+         "winter",
+         "summer"
+@@ -1871,19 +2660,26 @@ window.CKM = {
+       "tags": [
+         "wildlife",
+         "permit",
+-        "tiger"
++        "tiger",
++        "492-sq-km",
++        "safari"
+       ],
+       "sources": [
+         {
+           "label": "Karnataka Forest Department",
+           "url": "https://aranya.gov.in/"
++        },
++        {
++          "label": "Chikkamagaluru Dept. of Tourism brochure",
++          "url": "https://www.chikkamagalurutourism.in/"
+         }
+       ],
+       "talukId": "chikkamagaluru",
+       "difficulty": "easy",
+       "durationMin": 180,
+       "distanceKm": 38,
+-      "bestTime": "October – February"
++      "bestTime": "October – February",
++      "nearestAttractions": "Muthodi Wildlife Range, Lakkavalli Dam, Bhadra Reservoir, Kudremukh"
+     },
+     {
+       "id": "kudremukh-np",
+@@ -2027,10 +2823,10 @@ window.CKM = {
+       "id": "mullayanagiri",
+       "featured": true,
+       "group": "peaks",
+-      "kicker": "Highest in Karnataka",
++      "kicker": "Highest in Karnataka — 1,930 m",
+       "hours": "Daylight",
+       "hoursDetail": "No municipal opening hours are published. The district notes a narrow hill road and a final walk to the summit temple. After dark the hairpins are unlit and often in cloud.",
+-      "why": "Karnataka’s high point at about 1,930 m on the Baba Budan / Chandra Drona range. Visitor lists put it first for a reason: a grass-and-shola ridge, a small summit shrine, and winter mornings when the maidan is still in mist. The last stretch is typically walked.",
++      "why": "Karnataka’s high point at 1,930 m, about 20 km from town on the Baba Budan / Chandra Drona range. The Department of Tourism brochure notes Mullappa Swamy Temple at the summit, scenic mountain roads, and sunrise/sunset views. The last stretch is typically walked.",
+       "hoursSource": {
+         "label": "District tourism",
+         "url": "https://chikkamagaluru.nic.in/en/tourism/"
+@@ -2048,7 +2844,7 @@ window.CKM = {
+       "kicker": "Two-stage cascade",
+       "hours": "Jeep window often 09:00–15:00",
+       "hoursDetail": "Cars stop before the forest stretch. Authorised jeeps from the Kemmanagundi side are the usual last miles. Confirm at the counter. No fee is quoted here.",
+-      "why": "Dodda Hebbe and Chikka Hebbe drop through coffee and reserved forest below Kemmanagundi. Weekend itineraries pair it with the hill station. Access closes with rain, estate work or forest rules, ask on the ground.",
++      "why": "Dodda Hebbe and Chikka Hebbe drop through coffee and reserved forest below Kemmanagundi (about 10 km from the hill station). The tourism brochure flags June–September for peak flow. Access is usually by authorised jeep and can close with rain or forest rules.",
+       "hoursSource": {
+         "label": "Karnataka Forest Department",
+         "url": "https://aranya.gov.in/"
+@@ -2260,10 +3056,10 @@ window.CKM = {
+       "id": "bhadra-wls",
+       "featured": false,
+       "group": "forest",
+-      "kicker": "Tiger reserve",
++      "kicker": "492.46 sq km tiger reserve",
+       "hours": "Safari slots as the forest department notifies",
+       "hoursDetail": "Muthodi and other ranges are notified forest. Jeep timings and any fees belong to the department counter, not this page.",
+-      "why": "The coffee-hills tiger reserve. Tripadvisor and weekend lists name it; you still need a current permit, not a blog’s ‘jeep from town’.",
++      "why": "Bhadra Wildlife Sanctuary covers 492.46 sq km across 15 state forests (tourism brochure). Named for the Bhadra River from the Kudremukh hills — tigers, elephants, gaur and birds. Safari only through official forest channels.",
+       "hoursSource": {
+         "label": "Karnataka Forest Department",
+         "url": "https://aranya.gov.in/"
+@@ -2413,10 +3209,10 @@ window.CKM = {
+       "id": "kodandarama-temple-hiremagalur",
+       "featured": false,
+       "group": "temples",
+-      "kicker": "Town Rama shrine",
++      "kicker": "Single-stone Kalyana Kolam",
+       "hours": "Temple hours as posted locally",
+       "hoursDetail": "At Hiremagalur, just south of Chikkamagaluru town. Inner-sanctum and dress rules are the temple’s.",
+-      "why": "A living Kodandarama shrine close to town, the stop 2-day plans use when they still have an evening in the headquarters.",
++      "why": "Hiremagalur’s Kodandarama shrine, about 3 km from town: life-sized Rama, Sita and Lakshmana from a single stone, with Sita to Rama’s right in Kalyana Kolam — a brochure highlight of Hoysala–Dravidian craft close to headquarters.",
+       "hoursSource": {
+         "label": "District tourism",
+         "url": "https://chikkamagaluru.nic.in/en/tourism/"
+@@ -2834,6 +3630,10 @@ window.CKM = {
+         {
+           "title": "On the road",
+           "text": "Wikivoyage and local advice agree on a few unglamorous points: fill the tank before remote loops, watch for elephants, and do not enter flooded fords in the monsoon."
++        },
++        {
++          "title": "District tourism office",
++          "text": "Assistant Director, Department of Tourism — Belur Road, Near Kote Circle, Chikkamagaluru 577101. Phone 08262-295422 / 7892886875. Email ckm.tourism@gmail.com. Brochure and district notes inform place facts on this companion; this is not a government booking desk."
+         }
+       ]
+     }
+@@ -3672,7 +4472,7 @@ window.CKM = {
+       "id": "chikkamagaluru",
+       "name": "Chikkamagaluru",
+       "kannada": "ಚಿಕ್ಕಮಗಳೂರು",
+-      "count": 15,
++      "count": 18,
+       "blurb": "Town, Mullayanagiri, Baba Budangiri and the coffee hills above the cloud line.",
+       "listName": "Chikkamagaluru",
+       "mapLabel": "Chikkamagaluru"
+@@ -3681,7 +4481,7 @@ window.CKM = {
+       "id": "mudigere",
+       "name": "Mudigere",
+       "kannada": "ಮೂಡಿಗೆರೆ",
+-      "count": 7,
++      "count": 14,
+       "blurb": "Coffee and cardamom slopes toward the Kudremukh ridge.",
+       "listName": "Mudigere",
+       "mapLabel": "Mudigere"
+@@ -3690,7 +4490,7 @@ window.CKM = {
+       "id": "sringeri",
+       "name": "Sringeri",
+       "kannada": "ಶೃಂಗೇರಿ",
+-      "count": 4,
++      "count": 6,
+       "blurb": "The Tunga terrace and the matha that still orients this western edge.",
+       "listName": "Sringeri",
+       "mapLabel": "Sringeri"
+@@ -3726,7 +4526,7 @@ window.CKM = {
+       "id": "kadur",
+       "name": "Kadur",
+       "kannada": "ಕಡೂರು",
+-      "count": 3,
++      "count": 5,
+       "blurb": "The drier east, Ayyanakere’s open water and Deccan light.",
+       "listName": "Kadur",
+       "mapLabel": "Kadur"
+@@ -3735,7 +4535,7 @@ window.CKM = {
+       "id": "kalasa",
+       "name": "Kalasa",
+       "kannada": "ಕಲಸಾ",
+-      "count": 14,
++      "count": 16,
+       "blurb": "Kalasa–Horanadu country, carved from older Mudigere; waterfalls and Kudremukh approaches.",
+       "listName": "Kalasa",
+       "mapLabel": "Kalasa"
+diff --git a/dist/food.html b/dist/food.html
+index 85848b3..137ff53 100644
+--- a/dist/food.html
++++ b/dist/food.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/heritage.html b/dist/heritage.html
+index ad8f182..00a425d 100644
+--- a/dist/heritage.html
++++ b/dist/heritage.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/index.html b/dist/index.html
+index c17b2aa..a50d13a 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/map.html b/dist/map.html
+index b38b4f5..0d22794 100644
+--- a/dist/map.html
++++ b/dist/map.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/nature.html b/dist/nature.html
+index ba89c79..a9ec189 100644
+--- a/dist/nature.html
++++ b/dist/nature.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/places.html b/dist/places.html
+index 36c3916..199bde5 100644
+--- a/dist/places.html
++++ b/dist/places.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/plan.html b/dist/plan.html
+index 03b6fde..ef04edc 100644
+--- a/dist/plan.html
++++ b/dist/plan.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/popular.html b/dist/popular.html
+index 42bef4f..ff7aef0 100644
+--- a/dist/popular.html
++++ b/dist/popular.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/stay.html b/dist/stay.html
+index e8df7d0..fca99f6 100644
+--- a/dist/stay.html
++++ b/dist/stay.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/stories.html b/dist/stories.html
+index 86fa260..75fac4f 100644
+--- a/dist/stories.html
++++ b/dist/stories.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/taluk.html b/dist/taluk.html
+index 1781356..931302f 100644
+--- a/dist/taluk.html
++++ b/dist/taluk.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/tourism.html b/dist/tourism.html
+index 2e05970..5a97e35 100644
+--- a/dist/tourism.html
++++ b/dist/tourism.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/dist/visit.html b/dist/visit.html
+index 73e3b86..bd3719e 100644
+--- a/dist/visit.html
++++ b/dist/visit.html
+@@ -68,7 +68,7 @@
+       <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+     </noscript>
+     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+-    <script src="data.js?v=sage30"></script>
++    <script src="data.js?v=brochure72"></script>
+     <script src="statistics.js?v=sage2"></script>
+     <script src="numbers.js?v=sage5"></script>
+     <script src="sections.js?v=sage51"></script>
+diff --git a/scripts/merge_brochure_data.py b/scripts/merge_brochure_data.py
+new file mode 100644
+index 0000000..bbe5a61
+--- /dev/null
++++ b/scripts/merge_brochure_data.py
+@@ -0,0 +1,1047 @@
++#!/usr/bin/env python3
++"""Merge Department of Tourism brochure facts into Companion data.js.
++
++Does not change UI. Enriches existing destinations and adds missing places.
++Brochure is the preferred source for distance / route / official description facts
++when stated from Chikkamagaluru; Companion visit/permit caution notes are kept.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++from copy import deepcopy
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++DATA_PATH = ROOT / "data.js"
++VISION_PATH = Path("/opt/cursor/artifacts/tourism-merge/pdf-places-vision.json")
++OUT_REPORT = Path("/opt/cursor/artifacts/tourism-merge/merge-report.json")
++
++BROCHURE_SOURCE = {
++    "label": "Chikkamagaluru Dept. of Tourism brochure",
++    "url": "https://www.chikkamagalurutourism.in/",
++}
++
++
++def load_data() -> dict:
++    raw = DATA_PATH.read_text(encoding="utf-8")
++    assert raw.startswith("window.CKM = ")
++    body = raw[len("window.CKM = ") :].strip()
++    if body.endswith(";"):
++        body = body[:-1]
++    return json.loads(body)
++
++
++def save_data(data: dict) -> None:
++    # Pretty JSON matching existing style (2-space)
++    body = json.dumps(data, indent=2, ensure_ascii=False)
++    DATA_PATH.write_text("window.CKM = " + body + ";\n", encoding="utf-8")
++
++
++def parse_km(distance) -> int | None:
++    if not distance:
++        return None
++    s = str(distance)
++    # Prefer explicit "from Chikkamagaluru" numbers; skip "from Kadur/Kemmanagundi-only"
++    m = re.search(
++        r"(\d+)\s*km.*(chikkamagaluru|chikmagalur)",
++        s,
++        re.I,
++    )
++    if m:
++        return int(m.group(1))
++    if re.search(r"from\s+(kadur|kemman|kemmann)", s, re.I):
++        return None
++    m = re.search(r"(\d+)\s*km", s, re.I)
++    return int(m.group(1)) if m else None
++
++
++def ensure_source(place: dict) -> None:
++    sources = place.setdefault("sources", [])
++    if not any(s.get("label") == BROCHURE_SOURCE["label"] for s in sources):
++        sources.append(dict(BROCHURE_SOURCE))
++
++
++def join_facts(facts: list[str]) -> str:
++    # Keep companion tone: concise paragraphs from brochure bullets
++    cleaned = []
++    for f in facts:
++        f = re.sub(r"\s+", " ", f).strip().rstrip(".")
++        if f:
++            cleaned.append(f)
++    if not cleaned:
++        return ""
++    # First sentence as lead, rest as second paragraph when long
++    if len(cleaned) == 1:
++        return cleaned[0] + "."
++    lead = cleaned[0] + "."
++    rest = ". ".join(cleaned[1:]) + "."
++    return lead + " " + rest
++
++
++def set_route(place: dict, route: str | None) -> None:
++    if not route:
++        return
++    place["bestRoute"] = re.sub(r"\s+", " ", route).strip()
++
++
++def set_nearest(place: dict, facts: list[str]) -> None:
++    for f in facts:
++        if f.lower().startswith("nearest attraction"):
++            place["nearestAttractions"] = re.sub(
++                r"^Nearest attractions?:\s*", "", f, flags=re.I
++            ).strip()
++            return
++
++
++# Manual enrichment map: companion id -> brochure-derived fields
++# Prefer brochure "from Chikkamagaluru" distances when present.
++ENRICH: dict[str, dict] = {
++    "hirekolale": {
++        "distanceKm": 10,
++        "bestRoute": "Local roads from Chikkamagaluru city",
++        "blurb": "A serene lake about 10 km from town, tucked among the hills.",
++        "summary": (
++            "Hirekolale Lake is a scenic lake amidst the hills and valleys of "
++            "Chikkamagaluru, about 10 km from the city. Surrounded by lush greenery, "
++            "it is a known spot for picnics, nature walks and boating."
++        ),
++        "tags_add": ["picnic", "boating"],
++    },
++    "hebbe-falls": {
++        # Keep town distance; brochure highlights distance from Kemmanagundi
++        "bestRoute": "Scenic approach via Kemmanagundi; last stretch often by authorised jeep through forest and estate country",
++        "blurb": "A two-stage fall near Kemmanagundi — Dodda Hebbe and Chikka Hebbe.",
++        "summary": (
++            "Hebbe Falls is a mesmerizing waterfall reached from the Kemmanagundi side "
++            "(about 10 km from Kemmanagundi). Water drops in two stages, Dodda Hebbe "
++            "(Big Falls) and Chikka Hebbe (Small Falls). The Department of Tourism notes "
++            "the monsoon months (June–September) as the peak flow season, with swimming "
++            "and nature time in a tranquil forest setting when access is open."
++        ),
++        "bestTime": "June – September (peak flow); also strong through the post-monsoon",
++        "tags_add": ["dodda-hebbe", "chikka-hebbe"],
++    },
++    "hanuman-gundi": {
++        "distanceKm": 80,
++        "bestRoute": (
++            "Take SH66 (Chikkamagaluru–Kudremukha Road) toward Kudremukha National Park; "
++            "follow signs to Hanumana Gundi Falls"
++        ),
++        "blurb": "A high cascade inside Kudremukha National Park, named for Lord Hanuman.",
++        "summary": (
++            "Hanumanagundi Falls lies in the heart of Kudremukha National Park, about "
++            "80 km from Chikkamagaluru city by the tourism brochure. Named after Lord "
++            "Hanuman, the fall drops from a considerable height. Reaching it means a trek "
++            "through dense Western Ghats forest, with a chance to see the park’s flora and fauna."
++        ),
++        "visit": (
++            "Only with valid Kudremukh / forest access. Confirm permits and trail status "
++            "before you go. This is notified forest, not an open roadside waterfall."
++        ),
++    },
++    "sirimane-falls": {
++        "distanceKm": 80,
++        "bestRoute": "Drive on SH65 toward Sringeri; the falls are near Sringeri",
++        "blurb": "A multi-tiered fall in the forests near spiritual Sringeri.",
++        "summary": (
++            "Sirimane Falls, about 80 km from Chikkamagaluru toward Sringeri, is a "
++            "multi-tiered waterfall nestled in lush forest. A short trek through verdant "
++            "woods leads to the cascade — quieter than the busier east-side falls, and "
++            "often paired with a Sringeri temple visit."
++        ),
++    },
++    "kallathigiri": {
++        "bestRoute": "Via the Kemmanagundi / Kalathigiri village approaches",
++        "blurb": "A cliff cascade into a natural pool, beside Veerabhadra Temple.",
++        "summary": (
++            "Kallathigiri Falls (also Kalathigiri / Kalhattagiri) cascades from a rocky "
++            "cliff into a natural pool, surrounded by coffee estates and forest. The site "
++            "also holds the Veerabhadra Temple, which draws devotees through the year and "
++            "hosts an annual fair in March–April."
++        ),
++        "tags_add": ["veerabhadra-temple", "fair"],
++    },
++    "manikyadhara": {
++        "bestRoute": (
++            "Short trek or scenic drive through the Western Ghats near "
++            "Shri Guru Dattatreya Bababudan Swamy Dargah"
++        ),
++        "blurb": "A sacred cascade near Baba Budangiri, known for clear water and pilgrim visits.",
++        "summary": (
++            "Manikyadhara Falls sits near the Shri Guru Dattatreya Bababudan Swamy Dargah "
++            "ridge. The tourism brochure notes its lush setting, picnic and nature-walk appeal, "
++            "and a belief in the healing quality of the clear water. A nearby Lord Shiva shrine "
++            "also draws pilgrims."
++        ),
++    },
++    "shanti-falls": {
++        "distanceKm": 60,
++        "bestRoute": "SH57 (Chikkamagaluru–Tarikere Road) toward Kemmanagundi for Shanthi Falls",
++        "blurb": "A peaceful cascade in the Kemmanagundi hill country.",
++        "summary": (
++            "Shanthi (Shanti) Falls is a tranquil oasis in the Kemmanagundi hill station "
++            "landscape, about 60 km from Chikkamagaluru city by the brochure. Surrounded by "
++            "lush greenery, it is described as a quiet place for rest in pure mountain air."
++        ),
++    },
++    "kemmanagundi": {
++        "distanceKm": 60,
++        "blurb": "A garden hill station with Western Ghats panoramas — easy for families.",
++        "summary": (
++            "Kemmanagundi View Point / hill station sits about 60 km from Chikkamagaluru. "
++            "The brochure highlights panoramic views of valleys, forests and mountain ranges, "
++            "easy access for all ages, and popularity for sunrise, sunset and landscape "
++            "photography. Cool mountain weather without a strenuous trek. Nearest attractions "
++            "include Z Point, Hebbe Falls, Shanti Falls and Raj Bhavan."
++        ),
++        "nearestAttractions": "Z Point, Hebbe Falls, Shanti Falls, Raj Bhavan",
++    },
++    "bhadra-wls": {
++        "distanceKm": 38,
++        "blurb": "Karnataka tiger country on the Bhadra — 492.46 sq km across 15 state forests.",
++        "summary": (
++            "Bhadra Wildlife Sanctuary (Bhadra Tiger Reserve) takes its name from the Bhadra "
++            "River, which originates near the Kudremukh hills. The Department of Tourism "
++            "brochure records an area of 492.46 sq km comprising 15 state forests. It is home "
++            "to tigers, leopards, elephants, gaur, deer and many birds, with dense forest, "
++            "rolling hills and the scenic river. Popular for wildlife safaris and birdwatching. "
++            "Nearest attractions include Muthodi Wildlife Range, Lakkavalli Dam, Bhadra "
++            "Reservoir and Kudremukh."
++        ),
++        "visit": (
++            "Safari slots and fees are forest-department matters. Book only through official "
++            "channels such as https://tickets.bhadratigerreserve.in — this companion does not "
++            "sell tickets."
++        ),
++        "nearestAttractions": "Muthodi Wildlife Range, Lakkavalli Dam, Bhadra Reservoir, Kudremukh",
++        "tags_add": ["492-sq-km", "safari"],
++    },
++    "bhadra-dam": {
++        "distanceKm": 40,
++        "bestRoute": "Southeast on SH57 from Tarikere to Lakkavalli Dam",
++        "blurb": "The Bhadra dam at Lakkavalli — irrigation, power and tiger-country backwaters.",
++        "summary": (
++            "Lakkavalli Dam is a major landmark of Chikkamagaluru district, about 40 km from "
++            "the city by the tourism brochure (via Tarikere on SH57). Lakkavalli in Tarikere "
++            "Taluk holds a substantial dam on the Bhadra River for irrigation and power. Its "
++            "verdant surroundings are part of the agriculturally important Malnad landscape "
++            "and sit beside Bhadra tiger country."
++        ),
++    },
++    "kudremukh-peak": {
++        "distanceKm": 81,
++        "bestRoute": (
++            "Approach via Kudremukh park routes; summit walks are long grassland/forest treks "
++            "(brochure notes ~22 km trail character through grasslands, forests, streams and ridges)"
++        ),
++        "blurb": "One of Karnataka’s great Western Ghats treks to a high Kudremukh summit.",
++        "summary": (
++            "Kudremukh Peak, about 81 km from Chikkamagaluru by the brochure, is among the "
++            "finest trekking experiences in South India and leads toward the third-highest "
++            "peak in Karnataka. Trails pass grasslands, forests, streams and ridges with rich "
++            "biodiversity. Nearest attractions: Netravathi Peak, Kalasa, Hanumanagundi Falls."
++        ),
++        "nearestAttractions": "Netravathi Peak, Kalasa, Hanumanagundi Falls",
++    },
++    "z-point": {
++        "distanceKm": 67,
++        "bestRoute": "Trek from Kemmanagundi through forests; the path also passes scenic Shanti Falls country",
++        "blurb": "Kemmanagundi’s famous sunrise knife-edge over Western Ghats valleys.",
++        "summary": (
++            "Z Point is a popular trekking viewpoint near Kemmanagundi, about 67 km from "
++            "Chikkamagaluru city in the brochure. It is known for spectacular sunrise views "
++            "and panoramic Western Ghats vistas. The walk is generally easy for most visitors "
++            "and passes forest and waterfall scenery. Nearest attractions: Kemmanagundi, "
++            "Shanti Falls, Hebbe Falls."
++        ),
++        "nearestAttractions": "Kemmanagundi, Shanti Falls, Hebbe Falls",
++    },
++    "ballalarayana-durga": {
++        "distanceKm": 72,
++        "elevation": "1,509 m",
++        "blurb": "A Hoysala-era hill fort at 1,509 m above the Western Ghats forests.",
++        "summary": (
++            "Ballalarayana Durga is a historic hilltop fort in the lush Western Ghats, about "
++            "72 km from Chikkamagaluru. Built in the Hoysala period and set at about 1,509 m, "
++            "it is a popular trekking and camping destination with panoramic sunset views. "
++            "Nearest attractions: Bandaje Falls, Kalabhairaveshwara Temple, Rani Jhari, "
++            "Kudremukh, Kalasa."
++        ),
++        "nearestAttractions": "Bandaje Falls, Kalabhairaveshwara Temple, Rani Jhari, Kudremukh, Kalasa",
++    },
++    "deviramma": {
++        "distanceKm": 25,
++        "bestRoute": "Moderate trekking trail to the hilltop shrine / summit",
++        "blurb": "A sacred hilltop near the Mullayanagiri country — pilgrimage and ridge views.",
++        "summary": (
++            "Deviramma Hilltop is a sacred hill destination about 25 km from Chikkamagaluru, "
++            "combining spirituality and a moderate trek. The summit rewards panoramic Western "
++            "Ghats views and is a noted Deepavali pilgrimage. Nearest attractions: Deviramma "
++            "Temple, Mullayanagiri."
++        ),
++        "nearestAttractions": "Deviramma Temple, Mullayanagiri",
++    },
++    "deviramma-temple": {
++        "distanceKm": 20,
++        "bestRoute": "Scenic route toward the Bindiga / Mallenahalli Deviramma shrine",
++        "blurb": "Hill-country shrine of Goddess Deviramma — major Deepavali pilgrimage.",
++        "summary": (
++            "Shri Kshetra Bindiga Deviramma Temple sits in the Western Ghats hills near the "
++            "Mullayanagiri country, about 20 km from Chikkamagaluru. Dedicated to Goddess "
++            "Deviramma, it is renowned for its hill setting and an annual Deepavali festival "
++            "that draws thousands of devotees, with panoramic views of surrounding hills and "
++            "valleys."
++        ),
++        "nearestAttractions": "Deviramma Hill, Mullayanagiri",
++    },
++    "mullayanagiri": {
++        "distanceKm": 20,
++        "elevation": "1,930 m",
++        "bestRoute": "Scenic mountain roads toward the ridge; last stretch often walked to the summit temple",
++        "blurb": "Karnataka’s highest peak at 1,930 m — mist, coffee hills and a summit shrine.",
++        "summary": (
++            "Mullayanagiri is the highest peak in Karnataka at 1,930 metres above sea level, "
++            "about 20 km from Chikkamagaluru. Surrounded by mist-covered hills and coffee "
++            "plantations, it is one of the district’s most visited viewpoints for sunrise and "
++            "sunset. Mullappa Swamy Temple stands at the summit. Nearest attractions: "
++            "Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri."
++        ),
++        "nearestAttractions": "Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri",
++    },
++    "ettina-bhuja": {
++        # Brochure "25 km" conflicts with Mudigere-side geography; keep mapped approach
++        # but record brochure elevation and valley facts.
++        "elevation": "approx. 4,265 ft",
++        "blurb": "“Ox’s Shoulder” — a distinctive Western Ghats trek over Charmadi country.",
++        "summary": (
++            "Ettina Bhuja, popularly called the Ox’s Shoulder, is one of the most accessible "
++            "and rewarding treks in these hills. The brochure records an elevation of about "
++            "4,265 feet, an easy-to-moderate trail through dense forest and rolling grassland, "
++            "and panoramic views of the Charmadi and Shishila valleys. Nearest attractions: "
++            "Mudigere, Devaramane, Charmadi Ghat."
++        ),
++        "nearestAttractions": "Mudigere, Devaramane, Charmadi Ghat",
++        "distanceNote": (
++            "Tourism brochure lists 25 km from Chikkamagaluru; practical road+trail access is "
++            "usually via the Mudigere / Charmadi side — confirm locally."
++        ),
++    },
++    "netravathi-peak": {
++        "distanceKm": 95,
++        "elevation": "approx. 4,100 ft",
++        "bestRoute": "Trek through Kudremukh Forest Range — shola forests, streams and grasslands",
++        "blurb": "A Kudremukh-range trek named for the Netravathi River’s birth hills.",
++        "summary": (
++            "Netravathi Peak lies in the Kudremukh Forest Range. Named after the sacred "
++            "Netravathi River that originates in this region, the trek (brochure elevation "
++            "about 4,100 ft) moves through shola forest, streams and rolling grassland with "
++            "views toward Kudremukh Peak and Rani Jhari Valley. Nearest attractions: Kudremukh, "
++            "Rani Jhari Viewpoint, Kalasa."
++        ),
++        "nearestAttractions": "Kudremukh, Rani Jhari Viewpoint, Kalasa",
++    },
++    "balehonnur-rambhapuri-peetha": {
++        "distanceKm": 50,
++        "blurb": "One of Veerashaivism’s five Pancha Mahapeethas on the Tunga at Balehonnur.",
++        "summary": (
++            "Shri Jagadhguru Rambhapuri Peetha at Balehonnur stands on the banks of the Tunga "
++            "River, about 50 km from Chikkamagaluru. It is one of the five sacred Pancha "
++            "Mahapeethas of Veerashaivism, founded by Jagadguru Renukacharya, and preserves "
++            "centuries-old Veerashaiva–Lingayat traditions in a serene riverside setting. "
++            "Nearest attractions: Bhadra Wildlife Sanctuary, Devaramane, Kalaseshwara Temple."
++        ),
++        "nearestAttractions": "Bhadra Wildlife Sanctuary, Devaramane, Kalaseshwara Temple",
++    },
++    "kodandarama-temple-hiremagalur": {
++        "distanceKm": 3,
++        "blurb": "Hiremagalur’s Rama shrine — life-sized single-stone idols in Kalyana Kolam.",
++        "summary": (
++            "Kodanda Ramaswamy Temple at Hiremagalur, about 3 km from Chikkamagaluru, is among "
++            "Karnataka’s most revered Rama temples. Life-sized idols of Rama, Sita and Lakshmana "
++            "are sculpted from a single stone, with Sita standing to Rama’s right in the divine "
++            "Kalyana Kolam. The shrine shows Hoysala style with Dravidian influences — ornate "
++            "pillars, gopurams and stone carving. Nearest attractions: Hiremagalur Temple "
++            "Complex, Mullayanagiri, Mahatma Gandhi Park."
++        ),
++        "nearestAttractions": "Hiremagalur Temple Complex, Mullayanagiri, Mahatma Gandhi Park",
++    },
++    "amruthapura": {
++        "distanceKm": 74,
++        "blurb": "12th-century Hoysala Shiva temple near Tarikere — soapstone epics in stone.",
++        "summary": (
++            "Amrutheshwara Temple at Amruthapura, about 74 km from Chikkamagaluru near Tarikere, "
++            "is a magnificent Hoysala monument of the 12th century dedicated to Lord Shiva. It is "
++            "renowned for intricate soapstone carvings of the Ramayana and Mahabharata and "
++            "beautifully sculpted pillars. Nearest attractions: Tarikere, Lakkavalli Dam, "
++            "Kemmanagundi."
++        ),
++        "nearestAttractions": "Tarikere, Lakkavalli Dam, Kemmanagundi",
++    },
++    "kalasa": {
++        "distanceKm": 92,
++        "blurb": "Kalaseshwara on the Bhadra — Malnad Shiva shrine and famous Rathotsava.",
++        "summary": (
++            "Kalaseshwara Temple at Kalasa stands on the banks of the Bhadra River, about 92 km "
++            "from Chikkamagaluru, surrounded by Malnad hills. Dedicated to Lord Shiva with a "
++            "sacred Linga and traditional South Indian architecture, it is known for its annual "
++            "Rathotsava festival. Nearest attractions: Horanadu, Kudremukh, Bhadra River."
++        ),
++        "nearestAttractions": "Horanadu, Kudremukh, Bhadra River",
++    },
++    "belavadi": {
++        "distanceKm": 29,
++        "blurb": "13th-century Hoysala trikuta at Belavadi — Veeranarayana, Yoga Narasimha, Venugopala.",
++        "summary": (
++            "Veeranarayana Temple in historic Belavadi, about 29 km from Chikkamagaluru, is one "
++            "of the finest Hoysala temples of the 13th century, dedicated to Lord Vishnu. It "
++            "houses shrines of Veeranarayana, Yoga Narasimha and Venugopala, with exquisite "
++            "stone carvings and sculpted pillars. Nearest attractions: Halebidu, Belur, Marle "
++            "Twin Temples."
++        ),
++        "nearestAttractions": "Halebidu, Belur, Marle Twin Temples",
++    },
++    "baba-budangiri": {
++        "distanceKm": 33,
++        "blurb": "Shared Hindu–Muslim pilgrimage ridge — Datta Peetha and coffee-country legend.",
++        "summary": (
++            "Shri Guru Dattatreya Bababudan Swamy Dargah (Baba Budangiri / Datta Peetha), about "
++            "33 km from Chikkamagaluru, is a revered pilgrimage and trekking site in the Western "
++            "Ghats. The brochure notes its spiritual significance, scenic landscapes and unique "
++            "blend of traditions — a sacred shrine of Guru Dattatreya revered by both Hindu and "
++            "Muslim communities. Nearest attractions: Mullayanagiri, Manikyadhara Falls, Jhari Falls."
++        ),
++        "nearestAttractions": "Mullayanagiri, Manikyadhara Falls, Jhari Falls",
++    },
++    "horanadu": {
++        "distanceKm": 100,
++        "blurb": "Annapoorneshwari at Horanadu — Western Ghats pilgrimage known for annadana.",
++        "summary": (
++            "Sri Annapoorneshwari Temple at Horanadu, about 100 km from Chikkamagaluru on the "
++            "banks of the Bhadra amid Western Ghats forests and coffee hills, draws thousands of "
++            "devotees. It is widely known for the tradition of serving free meals to all visitors. "
++            "Nearest attractions: Kalasa, Kudremukh, Bhadra River."
++        ),
++        "nearestAttractions": "Kalasa, Kudremukh, Bhadra River",
++    },
++    "sringeri": {
++        "distanceKm": 90,
++        "blurb": "Adi Shankaracharya’s Sharadamba Peetha on the Tunga — wisdom’s southern seat.",
++        "summary": (
++            "Sringeri Sharadamba Temple, about 90 km from Chikkamagaluru on the Tunga River, was "
++            "established by Sri Adi Shankaracharya in the 8th century. It is one of the four "
++            "sacred Peethas he founded and is dedicated to Goddess Sharadamba, deity of wisdom "
++            "and learning. Nearest attractions: Vidyashankara Temple, Sirimane Falls, Kigga."
++        ),
++        "nearestAttractions": "Vidyashankara Temple, Sirimane Falls, Kigga",
++    },
++    "jhari-falls": {
++        "distanceKm": 24,
++        "bestRoute": "NH173 to Attigundi; short trek from Attigundi to the falls",
++        "blurb": "Buttermilk Falls near Attigundi — a short trek into forest spray.",
++        "summary": (
++            "Jhari Falls at Attigundi is about 24 km from Chikkamagaluru. A short trek from "
++            "Attigundi leads to this scenic waterfall in dense forest — a refreshing stop on "
++            "the high-ridge side of the district."
++        ),
++    },
++    "ayyanakere": {
++        "distanceKm": 22,
++        "bestRoute": (
++            "Chikkamagaluru–Kadur Road; turn left from Sakarayapattana / Sakharayapatna town"
++        ),
++        "blurb": "One of Karnataka’s great lakes near Sakharayapatna — hills on the horizon.",
++        "summary": (
++            "Ayyanakere, near Sakarayapattana about 22 km from Chikkamagaluru by the brochure, "
++            "is one of Karnataka’s largest lakes, framed by rolling hills and forest. It is "
++            "popular for photography and quiet time; water-sports activities are also organized "
++            "during the annual Shakuniranganatha Swamy Jatra Mahotsava in January."
++        ),
++        "tags_add": ["jatra", "january"],
++    },
++    "bandaje-arbi-traverse": {
++        "bestRoute": "Approaches via SH66 / SH64 toward Sunkasale / Rani Jhari country",
++        "summary": (
++            "Two days from Sunkasale over Ballalarayana Durga and down past Bandaje Falls toward "
++            "Ujire — among the finest ridge walks in these hills. The tourism brochure also "
++            "highlights Bandaje Falls itself (near Rani Jhari, Sunkasale Grama Panchayat) as a "
++            "spectacular trek destination with forest trails and Western Ghats views."
++        ),
++    },
++}
++
++
++NEW_PLACES: list[dict] = [
++    {
++        "id": "ukkada-falls",
++        "name": "Ukkada Falls",
++        "kannada": "ಉಕ್ಕಡ ಜಲಪಾತ",
++        "category": "waterfalls",
++        "taluk": "Chikkamagaluru",
++        "talukId": "chikkamagaluru",
++        "lat": 13.42,
++        "lng": 75.68,
++        "image": "assets/hebbe-falls.jpg",
++        "distanceKm": 40,
++        "bestRoute": "Take SH57 to reach Ukkada",
++        "bestTime": "July – January",
++        "difficulty": "moderate",
++        "durationMin": 180,
++        "blurb": "A secluded forest fall about 40 km out on the SH57 side — quiet water and birdsong.",
++        "summary": (
++            "Ukkada Falls, about 40 km from Chikkamagaluru city, is described by the tourism "
++            "brochure as a well-kept secret and a sanctuary for peace. The cascade falls gently "
++            "into a serene pool. Visitors enjoy about a 2 km forest trek with many bird species "
++            "along winding paths and quiet landscapes."
++        ),
++        "visit": "Forest paths can be slippery after rain. Go in daylight; ask locally for the current trailhead.",
++        "seasons": ["monsoon", "post-monsoon"],
++        "tags": ["waterfall", "trek", "birds"],
++        "near": "Ukkada village",
++    },
++    {
++        "id": "kodige-falls",
++        "name": "Kodige Falls",
++        "kannada": "ಕೊಡಿಗೆ ಜಲಪಾತ",
++        "category": "waterfalls",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.2,
++        "lng": 75.55,
++        "image": "assets/bandaje-falls.jpg",
++        "distanceKm": 60,
++        "bestRoute": "Drive on SH57 toward Durgadahalli, where Kodige Falls is located",
++        "bestTime": "July – January",
++        "difficulty": "moderate",
++        "durationMin": 180,
++        "blurb": "A hidden fall in the Durgadahalli forests and coffee country.",
++        "summary": (
++            "Kodige Falls, about 60 km from Chikkamagaluru near Durgadahalli, is a lesser-known "
++            "gem tucked amidst dense forests and coffee plantations. The brochure describes a "
++            "journey through lush greenery with the distant sound of flowing water — a serene "
++            "escape rather than a crowded viewpoint."
++        ),
++        "visit": "Confirm the trailhead at Durgadahalli. After heavy rain, paths may be closed or slippery.",
++        "seasons": ["monsoon", "post-monsoon"],
++        "tags": ["waterfall", "coffee-country"],
++        "near": "Durgadahalli",
++    },
++    {
++        "id": "soor-mane-falls",
++        "name": "Soor Mane Falls",
++        "kannada": "ಸೂರುಮನೆ ಜಲಪಾತ",
++        "category": "waterfalls",
++        "taluk": "Kalasa",
++        "talukId": "kalasa",
++        "lat": 13.23,
++        "lng": 75.4,
++        "image": "assets/hebbe-falls.jpg",
++        "distanceKm": 65,
++        "bestRoute": "Take NH173 toward Kalasa; the falls are accessible from Kalasa",
++        "bestTime": "July – January",
++        "difficulty": "easy",
++        "durationMin": 120,
++        "blurb": "A quiet Kalasa-side fall — short trek, forests, and popular for photography.",
++        "summary": (
++            "Soor Mane (Soormane) Falls near Kalasa, about 65 km from Chikkamagaluru, is a "
++            "serene lesser-known waterfall surrounded by lush forest. Reached by a short trek, "
++            "it is a peaceful nature retreat and a popular spot for photography and pre-wedding "
++            "shoots. Distinct from Sirimane Falls near Sringeri."
++        ),
++        "visit": "Not the same place as Sirimane Falls (Sringeri side). Confirm Kalasa-side access locally.",
++        "seasons": ["monsoon", "post-monsoon"],
++        "tags": ["waterfall", "photography", "kalasa"],
++        "near": "Kalasa",
++    },
++    {
++        "id": "elaneer-falls",
++        "name": "Elaneer Falls",
++        "kannada": "ಏಲನೀರು ಜಲಪಾತ",
++        "category": "waterfalls",
++        "taluk": "Kalasa",
++        "talukId": "kalasa",
++        "lat": 13.18,
++        "lng": 75.38,
++        "image": "assets/bandaje-falls.jpg",
++        "distanceKm": 80,
++        "bestRoute": "Drive on SH65 toward Samse; Elaneer Falls is near Samse",
++        "bestTime": "July – January",
++        "difficulty": "moderate",
++        "durationMin": 240,
++        "blurb": "A hidden cascade near Samse — dense forest trek to high, untouched water.",
++        "summary": (
++            "Elaneer (Elaneeru) Falls near the village of Samse, about 80 km from Chikkamagaluru, "
++            "is a hidden treasure of the district. A trek through dense forest paths leads to "
++            "pure water cascading from great heights in undisturbed Western Ghats nature."
++        ),
++        "visit": "Forest trek — weather and daylight matter. Ask in Samse for the current path.",
++        "seasons": ["monsoon", "post-monsoon"],
++        "tags": ["waterfall", "trek", "samse"],
++        "near": "Samse",
++    },
++    {
++        "id": "bandaje-falls",
++        "name": "Bandaje Falls",
++        "kannada": "ಬಂಡಾಜೆ ಜಲಪಾತ",
++        "category": "waterfalls",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.12,
++        "lng": 75.42,
++        "image": "assets/bandaje-falls.jpg",
++        "distanceKm": 100,
++        "bestRoute": "Typically via SH66 and SH64 toward the Rani Jhari / Sunkasale side",
++        "bestTime": "November – February",
++        "difficulty": "challenging",
++        "durationMin": 480,
++        "blurb": "A spectacular trek fall near Rani Jhari and Sunkasale — Western Ghats reward.",
++        "summary": (
++            "Bandajje / Bandaje Falls near Rani Jhari (Sunkasale Grama Panchayat), about 100 km "
++            "from Chikkamagaluru, is a spectacular trekking destination of forest trails and "
++            "pristine landscapes. The challenging walk rewards visitors with views of the "
++            "waterfall and surrounding Western Ghats. Related ridge walking is also described "
++            "under the Bandaje Arbi Traverse."
++        ),
++        "visit": "Serious trek terrain. Carry water, start early, and prefer local guidance. Not a casual roadside stop.",
++        "seasons": ["winter", "post-monsoon"],
++        "tags": ["waterfall", "trek", "rani-jhari"],
++        "near": "Rani Jhari, Sunkasale Grama Panchayat",
++        "nearestAttractions": "Ballalarayana Durga, Rani Jhari, Kudremukh",
++    },
++    {
++        "id": "madagada-kere",
++        "name": "Madagada Kere",
++        "kannada": "ಮಡಗಡ ಕೆರೆ",
++        "category": "lakes",
++        "taluk": "Kadur",
++        "talukId": "kadur",
++        "lat": 13.55,
++        "lng": 76.0,
++        "image": "assets/ayyanakere.jpg",
++        "distanceKm": None,
++        "distanceNote": "Brochure: approximately 12 km from Kadur (SH24 south, then southwest)",
++        "bestRoute": "From Kadur, head south on SH24 and continue southwest to Madagada Kere",
++        "bestTime": "October – February",
++        "difficulty": "easy",
++        "durationMin": 120,
++        "blurb": "A tranquil Kadur-side lake for walks, boating and local cultural days.",
++        "summary": (
++            "Madagada Kere near Kadur is a picturesque lake and popular recreational place for "
++            "locals and visitors. The brochure notes leisurely lakeside walks, boating, and "
++            "cultural significance as a source of livelihood and a venue for regional events — "
++            "a calm Malnad-east water sheet rather than a ghat trek."
++        ),
++        "visit": "Open lakeshore setting. Any boating is local — this page does not sell tickets.",
++        "seasons": ["winter", "post-monsoon"],
++        "tags": ["lake", "boating", "kadur"],
++        "near": "Kadur",
++    },
++    {
++        "id": "panchami-kallu",
++        "name": "Panchami Kallu",
++        "kannada": "ಪಂಚಮಿ ಕಲ್ಲು",
++        "category": "viewpoints",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.1,
++        "lng": 75.55,
++        "image": "assets/z-point.jpg",
++        "distanceKm": 55,
++        "bestTime": "September – February",
++        "difficulty": "moderate",
++        "durationMin": 180,
++        "blurb": "A quieter rock viewpoint near Devaramane and Kogre — coffee hills and valleys.",
++        "summary": (
++            "Panchami Kallu is a lesser-known hilltop viewpoint about 55 km from Chikkamagaluru, "
++            "near Devaramane and Kogre village. Surrounded by forests, coffee estates and valleys, "
++            "it offers a serene trek away from crowds, with a unique rock viewpoint and panoramic "
++            "Western Ghats views. Nearest attractions: Devaramane Viewpoint, Mudigere, "
++            "Kalabhairaveshwara Temple."
++        ),
++        "visit": "Carry water and keep to daylight. Trails can be unclear — ask at Devaramane / Kogre.",
++        "seasons": ["winter", "post-monsoon", "monsoon"],
++        "tags": ["viewpoint", "trek", "coffee-country"],
++        "near": "Devaramane and Kogre village",
++        "nearestAttractions": "Devaramane Viewpoint, Mudigere, Kalabhairaveshwara Temple",
++    },
++    {
++        "id": "devaramane-viewpoint",
++        "name": "Devaramane Viewpoint",
++        "kannada": "ದೇವರಮನೆ",
++        "category": "viewpoints",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.09,
++        "lng": 75.54,
++        "image": "assets/kemmanagundi.jpg",
++        "distanceKm": 52,
++        "bestRoute": "Short trek from the Kalabhairaveshwara Temple",
++        "bestTime": "Monsoon and post-monsoon",
++        "difficulty": "easy",
++        "durationMin": 120,
++        "blurb": "Grassland views above Mudigere — a short walk from Kalabhairaveshwara Temple.",
++        "summary": (
++            "Devaramane Viewpoint (Devaramane Betta), about 52 km from Chikkamagaluru near the "
++            "Kalabhairaveshwara Temple, is a hidden gem of rolling grasslands and panoramic "
++            "Western Ghats views. Ideal in monsoon and post-monsoon. Distinct from Deviramma "
++            "Betta near the Mullayanagiri side. Nearest attractions: Kalabhairaveshwara Temple, "
++            "Panchami Kallu, Mudigere."
++        ),
++        "visit": "Short temple-side trek. Mist can erase the view quickly in the rains.",
++        "seasons": ["monsoon", "post-monsoon"],
++        "tags": ["viewpoint", "grassland", "mudigere"],
++        "near": "Kalabhairaveshwara Temple",
++        "nearestAttractions": "Kalabhairaveshwara Temple, Panchami Kallu, Mudigere",
++    },
++    {
++        "id": "rani-jhari-viewpoint",
++        "name": "Rani Jhari Viewpoint",
++        "kannada": "ರಾಣಿ ಝರಿ",
++        "category": "viewpoints",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.15,
++        "lng": 75.35,
++        "image": "assets/kudremukh-np.jpg",
++        "distanceKm": 70,
++        "bestTime": "Monsoon and clear winter mornings",
++        "difficulty": "moderate",
++        "durationMin": 180,
++        "blurb": "One of the Western Ghats’ great valley viewpoints — mist, grass and monsoon drama.",
++        "summary": (
++            "Rani Jhari is among the most breathtaking viewpoints in the Western Ghats, about "
++            "70 km from Chikkamagaluru. Surrounded by valleys, forests and grasslands, it is "
++            "especially beautiful in the monsoon and a favourite for sunrise, sunset and "
++            "photography. Not the same place as Jhari (Buttermilk) Falls near Attigundi. "
++            "Nearest attractions: Kudremukh, Netravathi Peak, Durgadahalli."
++        ),
++        "visit": "Exposed viewpoints — wind and cloud move fast. Keep daylight margin.",
++        "seasons": ["monsoon", "winter", "post-monsoon"],
++        "tags": ["viewpoint", "photography", "monsoon"],
++        "near": "Kudremukh / Netravathi Peak area",
++        "nearestAttractions": "Kudremukh, Netravathi Peak, Durgadahalli",
++    },
++    {
++        "id": "narasimha-parvatha",
++        "name": "Narasimha Parvatha",
++        "kannada": "ನರಸಿಂಹ ಪರ್ವತ",
++        "category": "treks",
++        "taluk": "Sringeri",
++        "talukId": "sringeri",
++        "lat": 13.4,
++        "lng": 75.2,
++        "image": "assets/kudremukh-np.jpg",
++        "distanceKm": 110,
++        "bestTime": "November – February",
++        "difficulty": "challenging",
++        "durationMin": 600,
++        "blurb": "A classic Sringeri-side Western Ghats trek named in the district trek list.",
++        "summary": (
++            "Narasimha Parvatha is listed among Chikkamagaluru’s major trekking and viewpoint "
++            "trails in the Department of Tourism brochure, alongside Mullayanagiri, Kudremukh "
++            "and Netravathi Peak. It is a serious Western Ghats walk on the Sringeri / Agumbe "
++            "side of the district — permits, weather and local guidance come first."
++        ),
++        "visit": "Confirm forest permits and season before attempting. Not a casual day outing from town.",
++        "seasons": ["winter", "post-monsoon"],
++        "tags": ["trek", "western-ghats"],
++    },
++    {
++        "id": "devarunda-rameshwara",
++        "name": "Devarunda Prasanna Rameshwara Temple",
++        "kannada": "ದೇವರುಂದ ರಾಮೇಶ್ವರ",
++        "category": "temples",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.14,
++        "lng": 75.64,
++        "image": "assets/belavadi.jpg",
++        "distanceKm": 55,
++        "bestTime": "All year",
++        "difficulty": "easy",
++        "durationMin": 90,
++        "blurb": "“Dakshina Kashi” of Mudigere — an ancient Shiva shrine in Malnad green.",
++        "summary": (
++            "Devarunda Prasanna Rameshwara Temple near Mudigere, about 55 km from Chikkamagaluru, "
++            "is popularly known as Dakshina Kashi. The brochure describes a revered ancient "
++            "Lord Shiva shrine, believed to be over 500 years old, with several deities in the "
++            "complex and a serene cultural setting in lush Mudigere landscapes."
++        ),
++        "visit": "Living temple — dress and photography follow temple rules.",
++        "seasons": ["winter", "post-monsoon", "summer"],
++        "tags": ["temple", "shiva", "mudigere"],
++        "near": "Mudigere",
++    },
++    {
++        "id": "hirenallur-mallikarjuna",
++        "name": "Mallikarjuna Temple, Hirenallur",
++        "kannada": "ಹಿರೇನಲ್ಲೂರು ಮಲ್ಲಿಕಾರ್ಜುನ",
++        "category": "temples",
++        "taluk": "Kadur",
++        "talukId": "kadur",
++        "lat": 13.55,
++        "lng": 76.05,
++        "image": "assets/amruthapura.jpg",
++        "distanceKm": 57,
++        "bestTime": "All year",
++        "difficulty": "easy",
++        "durationMin": 90,
++        "blurb": "ASI-protected Hoysala Shiva temple near Kadur — quieter than the famous twins.",
++        "summary": (
++            "Mallikarjuna Temple at Hirenallur, about 57 km from Chikkamagaluru (roughly 12 km "
++            "from Kadur), is a lesser-known but architecturally significant Hoysala-era temple "
++            "dedicated to Lord Shiva as Mallikarjuna. It is protected by the Archaeological "
++            "Survey of India. Nearest attractions: Kadur, Belavadi, Amruthapura, Chikkamagaluru."
++        ),
++        "visit": "Heritage monument — follow ASI / temple guidance on site.",
++        "seasons": ["winter", "post-monsoon", "summer"],
++        "tags": ["temple", "hoysala", "asi"],
++        "near": "Hirenallur village (about 12 km from Kadur)",
++        "nearestAttractions": "Kadur, Belavadi, Amruthapura, Chikkamagaluru",
++    },
++    {
++        "id": "baggavalli-yoganarasimha",
++        "name": "Yoganarasimhaswamy Temple, Baggavalli",
++        "kannada": "ಬಗ್ಗವಳ್ಳಿ ಯೋಗನರಸಿಂಹ",
++        "category": "temples",
++        "taluk": "Mudigere",
++        "talukId": "mudigere",
++        "lat": 13.2,
++        "lng": 75.58,
++        "image": "assets/belavadi.jpg",
++        "distanceKm": 61,
++        "bestTime": "All year",
++        "difficulty": "easy",
++        "durationMin": 90,
++        "blurb": "Hoysala-period shrine at Baggavalli — once Keshava, now famed for Yoganarasimha.",
++        "summary": (
++            "Yoganarasimhaswamy Temple in Baggavalli village (Mudigere Taluk), about 61 km from "
++            "Chikkamagaluru, is an important Hoysala-period monument. Originally dedicated to "
++            "Lord Keshava, it features sculptures of Yoganarasimha, Lakshmi and Ganesha and "
++            "stands as a fine example of Hoysala craft in the taluk. Nearest attractions: "
++            "Mudigere, Devaramane, Ettina Bhuja."
++        ),
++        "visit": "Living / heritage temple setting — follow local rules.",
++        "seasons": ["winter", "post-monsoon", "summer"],
++        "tags": ["temple", "hoysala", "narasimha"],
++        "near": "Baggavalli village, Mudigere Taluk",
++        "nearestAttractions": "Mudigere, Devaramane, Ettina Bhuja",
++    },
++    {
++        "id": "khandya-markandeshwara",
++        "name": "Sri Markandeshwara Temple, Khandya",
++        "kannada": "ಖಂಡ್ಯ ಮಾರ್ಕಂಡೇಶ್ವರ",
++        "category": "temples",
++        "taluk": "Chikkamagaluru",
++        "talukId": "chikkamagaluru",
++        "lat": 13.4,
++        "lng": 75.85,
++        "image": "assets/belavadi.jpg",
++        "distanceKm": 44,
++        "bestTime": "All year",
++        "difficulty": "easy",
++        "durationMin": 90,
++        "blurb": "Post-Vijayanagara Shiva temple in the hills — granite work and local legend.",
++        "summary": (
++            "Sri Markandeshwara Temple at Khandya, about 44 km from Chikkamagaluru, is a revered "
++            "Shiva temple of Post-Vijayanagara architecture in scenic hill surroundings. It is "
++            "associated with Sage Mallikarjuna and local legends, with intricate granite carvings "
++            "and sculptures — a historic cultural landmark of the region."
++        ),
++        "visit": "Living temple — dress and conduct follow temple custom.",
++        "seasons": ["winter", "post-monsoon", "summer"],
++        "tags": ["temple", "shiva", "heritage"],
++        "near": "Khandya",
++    },
++    {
++        "id": "marle-twin-temples",
++        "name": "Marle Twin Temples",
++        "kannada": "ಮರ್ಳೆ ದೇವಾಲಯಗಳು",
++        "category": "temples",
++        "taluk": "Chikkamagaluru",
++        "talukId": "chikkamagaluru",
++        "lat": 13.28,
++        "lng": 75.85,
++        "image": "assets/belavadi.jpg",
++        "distanceKm": 12,
++        "bestTime": "All year",
++        "difficulty": "easy",
++        "durationMin": 90,
++        "blurb": "Hoysala twin shrines at Marle — Chennakeshava and Siddeshwara, c. 1150 CE.",
++        "summary": (
++            "Marle Twin Temples, about 12 km from Chikkamagaluru, are hidden Hoysala gems: "
++            "Shri Chennakeshava Temple and Siddeshwara Temple, built around 1150 CE and dedicated "
++            "to Vishnu and Shiva. Intricate stone carving makes them an excellent example of "
++            "medieval Karnataka architecture. Nearest attractions: Belur, Halebeedu, "
++            "Veeranarayana Temple."
++        ),
++        "visit": "Heritage temples — follow on-site ASI / temple guidance.",
++        "seasons": ["winter", "post-monsoon", "summer"],
++        "tags": ["temple", "hoysala", "twin-temples"],
++        "near": "Marle",
++        "nearestAttractions": "Belur, Halebeedu, Veeranarayana Temple",
++    },
++    {
++        "id": "kyatanamakki",
++        "name": "Kyatanamakki Hill",
++        "kannada": "ಕ್ಯಾತನಮಕ್ಕಿ",
++        "category": "treks",
++        "taluk": "Sringeri",
++        "talukId": "sringeri",
++        "lat": 13.45,
++        "lng": 75.25,
++        "image": "assets/kudremukh-np.jpg",
++        "bestTime": "November – February",
++        "difficulty": "moderate",
++        "durationMin": 300,
++        "blurb": "A brochure-listed hill trek on the Sringeri / Western Ghats side.",
++        "summary": (
++            "Kyatanamakki Hill Trek is named in the Department of Tourism brochure’s trekking "
++            "and viewpoints list for Chikkamagaluru, together with trails such as Mullayanagiri, "
++            "Kudremukh and Narasimha Parvatha. Expect grassland and shola country — confirm "
++            "season and any forest guidance before you go."
++        ),
++        "visit": "Daylight trek. Weather on the ghats changes quickly.",
++        "seasons": ["winter", "post-monsoon"],
++        "tags": ["trek", "hill"],
++    },
++]
++
++
++def apply_enrichment(place: dict, patch: dict) -> list[str]:
++    changes = []
++    for key, val in patch.items():
++        if key == "tags_add":
++            tags = place.setdefault("tags", [])
++            for t in val:
++                if t not in tags:
++                    tags.append(t)
++                    changes.append(f"+tag:{t}")
++            continue
++        old = place.get(key)
++        if old != val:
++            place[key] = val
++            changes.append(key)
++    ensure_source(place)
++    return changes
++
++
++def recompute_counts(data: dict) -> None:
++    dests = data["destinations"]
++    cat_counts: dict[str, int] = {}
++    taluk_counts: dict[str, int] = {}
++    for d in dests:
++        cat_counts[d["category"]] = cat_counts.get(d["category"], 0) + 1
++        tid = d.get("talukId")
++        if tid:
++            taluk_counts[tid] = taluk_counts.get(tid, 0) + 1
++    for c in data["categories"]:
++        if c["id"] == "all":
++            continue
++        if c["id"] in cat_counts:
++            c["count"] = cat_counts[c["id"]]
++    for t in data["taluks"]:
++        t["count"] = taluk_counts.get(t["id"], 0)
++
++
++def update_official(data: dict) -> None:
++    official = data.setdefault("official", {})
++    official["tourism_office_phone"] = "08262-295422"
++    official["tourism_office_mobile"] = "7892886875"
++    official["tourism_office_email"] = "ckm.tourism@gmail.com"
++    official["tourism_office_address"] = (
++        "Office of the Assistant Director, Department of Tourism, "
++        "Belur Road, Near Kote Circle, Chikkamagaluru – 577101"
++    )
++    official["tourism_site"] = "https://www.chikkamagalurutourism.in/"
++    official["aranyavihaara"] = "https://aranyavihaara.karnataka.gov.in/"
++    official["bhadra_tickets"] = "https://tickets.bhadratigerreserve.in/"
++
++
++def update_essentials_contact(data: dict) -> None:
++    essentials = data.get("essentials") or {}
++    emergency = essentials.get("emergency")
++    if isinstance(emergency, dict):
++        items = emergency.setdefault("items", [])
++        label = "District tourism office"
++        if not any(i.get("title") == label for i in items):
++            items.append(
++                {
++                    "title": label,
++                    "text": (
++                        "Assistant Director, Department of Tourism — Belur Road, Near Kote Circle, "
++                        "Chikkamagaluru 577101. Phone 08262-295422 / 7892886875. "
++                        "Email ckm.tourism@gmail.com. "
++                        "Brochure and district notes inform place facts on this companion; "
++                        "this is not a government booking desk."
++                    ),
++                }
++            )
++
++
++def main() -> None:
++    data = load_data()
++    by_id = {d["id"]: d for d in data["destinations"]}
++    report = {"enriched": {}, "added": [], "skipped_new": []}
++
++    for pid, patch in ENRICH.items():
++        if pid not in by_id:
++            report["enriched"][pid] = ["MISSING_ID"]
++            continue
++        changes = apply_enrichment(by_id[pid], patch)
++        report["enriched"][pid] = changes
++
++    for place in NEW_PLACES:
++        pid = place["id"]
++        if pid in by_id:
++            report["skipped_new"].append(pid)
++            continue
++        new_p = deepcopy(place)
++        # fix image ternary leftover
++        if new_p.get("image") is True or new_p.get("image") is False:
++            new_p["image"] = "assets/hebbe-falls.jpg"
++        ensure_source(new_p)
++        # default sources also include district tourism
++        sources = new_p.setdefault("sources", [])
++        if not any(s.get("label") == "District tourism" for s in sources):
++            sources.insert(
++                0,
++                {
++                    "label": "District tourism",
++                    "url": "https://chikkamagaluru.nic.in/en/tourism/",
++                },
++            )
++        data["destinations"].append(new_p)
++        by_id[pid] = new_p
++        report["added"].append(pid)
++
++    # Sort destinations by name for stability
++    data["destinations"].sort(key=lambda d: (d.get("category") or "", d.get("name") or ""))
++
++    recompute_counts(data)
++    update_official(data)
++    update_essentials_contact(data)
++
++    # Stamp site description lightly (no UI) — keep independent companion wording
++    site = data.setdefault("site", {})
++    desc = site.get("description") or ""
++    if "Department of Tourism brochure" not in desc:
++        site["description"] = (
++            "An independent, static companion for discovering Chikkamagaluru district: peaks, "
++            "waterfalls, temples, forests and seasons. Place facts are enriched from the "
++            "District Department of Tourism brochure and official notes. Not a government site, "
++            "not a booking service, and nothing here is downloadable."
++        )
++
++    save_data(data)
++    report["destination_count"] = len(data["destinations"])
++    report["category_counts"] = {
++        c["id"]: c.get("count") for c in data["categories"] if c["id"] != "all"
++    }
++    OUT_REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
++    print(json.dumps(report, indent=2))
++
++
++if __name__ == "__main__":
++    main()
+-- 
+2.43.0
+
