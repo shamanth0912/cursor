@@ -2,4 +2,9 @@
 
 ## Skills
 
-- **cinematic-sites** — premium looping-video cinematic hero (Janus-style glass nav). Path: `.cursor/skills/cinematic-sites/SKILL.md`. Invoke with `/cinematic-sites`.
+Permanent animated-site catalog (route with `/animated-site-skills`):
+
+- **cinematic-sites** — looping-video glass hero
+- **cinematic-scroll** — scroll-driven cinematic sites (MustBeSimo, slim copy)
+- **immersive-web** / **motion-graphics** — Google Flow / Veo (gflow-skills)
+- **frontend-design** — Anthropic UI taste skill

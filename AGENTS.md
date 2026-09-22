@@ -1,15 +1,20 @@
 # Agent instructions
 
-## Cinematic sites
+## Animated / cinematic websites
 
-This repo includes a **cinematic-sites** skill. Use it in every conversation where the user wants a premium looping-video landing hero (glass nav, Instrument Serif headline, email capture).
+Route first with **animated-site-skills**, then open the matching skill.
 
-- Skill: `.cursor/skills/cinematic-sites/SKILL.md`
-- Prompts: `.cursor/skills/cinematic-sites/references/prompts.md`
-- Glass CSS: `.cursor/skills/cinematic-sites/references/liquid-glass.css`
+| Skill | Path | Use |
+| --- | --- | --- |
+| animated-site-skills | `.cursor/skills/animated-site-skills/SKILL.md` | Router + registries |
+| cinematic-sites | `.cursor/skills/cinematic-sites/SKILL.md` | Looping-video glass hero (Janus) |
+| cinematic-scroll | `.cursor/skills/cinematic-scroll/SKILL.md` | Scroll-driven cinematic sites |
+| immersive-web | `.cursor/skills/immersive-web/SKILL.md` | Google Flow / Veo immersive sites |
+| motion-graphics | `.cursor/skills/motion-graphics/SKILL.md` | Seamless loops / hero videos |
+| frontend-design | `.cursor/skills/frontend-design/SKILL.md` | Distinctive UI, not motion |
 
-Compatibility copies also live at `.agents/skills/cinematic-sites/`, `.claude/skills/cinematic-sites/`, and `.codex/skills/cinematic-sites/` (same files; Cursor does not follow skill symlinks).
+`.cursor/install.sh` mirrors these into `~/.cursor/skills` (and Claude/Codex/Agents dirs) plus `/cursor/stores/user` so later Cloud Agent chats can reuse them.
 
-Environment bootstrap (`.cursor/install.sh`) also mirrors the skill into user-global dirs on this machine (`~/.cursor/skills`, `~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`) and into `/cursor/stores/user` so later Cloud Agent chats for this user can still find it.
+Compatibility copies: `.agents/skills/`, `.claude/skills/`, `.codex/skills/` (real files; Cursor skips skill symlinks).
 
-Invoke with `/cinematic-sites` or let the agent match on the skill description.
+Slash: `/animated-site-skills` `/cinematic-sites` `/cinematic-scroll`

@@ -1,12 +1,13 @@
 ---
-description: Cinematic looping-video hero playbook (glass nav, serif headline). Point every agent in this repo at the skill, including new chats.
+description: Route cinematic/animated website work through Shamanth’s permanent skill catalog, including later chats in this repo.
 alwaysApply: true
 ---
 
-# Cinematic sites skill (always on)
+# Animated site skills (always on)
 
-When the user wants an expensive-looking animated website, cinematic hero, looping background video, liquid glass nav, Janus-style studio page, falling petals, or liquid-light vibe, **read and follow** `.cursor/skills/cinematic-sites/SKILL.md` before writing UI.
+For expensive animated websites, looping video heroes, glass nav, scroll-driven cinematic pages, GSAP/Lenis, Google Flow/Veo, or Runway loops:
 
-Do not invent a generic Tailwind hero. The look is a slow seamless ~5s loop behind a black full-viewport glass hero.
+1. Read `.cursor/skills/animated-site-skills/SKILL.md` and pick a route.
+2. Then follow that skill (`cinematic-sites`, `cinematic-scroll`, `immersive-web`, `motion-graphics`, `frontend-design`).
 
-Slash invoke: `/cinematic-sites`
+Do not invent a generic Tailwind landing page when one of these skills applies.
