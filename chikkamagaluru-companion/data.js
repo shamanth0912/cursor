@@ -4183,11 +4183,11 @@ window.CKM = {
     },
     {
       "local": "manikyadhara.jpg",
-      "place": "Manikyadhara",
-      "file": "Hill, Manikyadhara.jpg",
-      "artist": "Kgpramod2",
-      "license": "CC BY-SA 4.0",
-      "url": "https://commons.wikimedia.org/wiki/File:Hill,_Manikyadhara.jpg"
+      "place": "Manikyadhara Falls, Baba Budangiri (authentic cascade photograph)",
+      "file": "Manikyadhara.JPG",
+      "artist": "Amarrg",
+      "license": "Public domain",
+      "url": "https://commons.wikimedia.org/wiki/File:Manikyadhara.JPG"
     },
     {
       "local": "z-point.jpg",
@@ -4359,7 +4359,7 @@ window.CKM = {
     },
     {
       "local": "koppa-hills.jpg",
-      "place": "Tea estate near Koppa",
+      "place": "Tea estate near Koppa stand-in — no freely licensed photo of Kopada Veerabhadra Temple found",
       "file": "Koppachikmagalur.jpg",
       "artist": "Irrigator",
       "license": "CC BY-SA 3.0",
@@ -4439,7 +4439,7 @@ window.CKM = {
     },
     {
       "local": "yagati-kadur-road.jpg",
-      "place": "Kadur Road, Chikkamagaluru (Yagati is in Kadur taluk)",
+      "place": "Kadur Road landscape stand-in — no freely licensed photo of Mallikarjuna Temple, Yagati found",
       "file": "Kadur Road, Chikmagalur..jpg",
       "artist": "Prof tpms",
       "license": "CC BY-SA 3.0",
@@ -4551,10 +4551,10 @@ window.CKM = {
     },
     {
       "local": "marle-twin-temples.jpg",
-      "place": "Chennakesava temple, Marale (Marle)",
+      "place": "Chennakesava temple, Marale — ARCHITECTURAL PLAN only (no freely licensed photograph of Marle Twin Temples found on Commons/Flickr/Openverse)",
       "file": "Chennakesava temple, Marale, Karnataka.jpg",
-      "artist": "see Commons file page",
-      "license": "CC BY-SA 4.0",
+      "artist": "Ms Sarah Welch",
+      "license": "CC0",
       "url": "https://commons.wikimedia.org/wiki/File:Chennakesava_temple,_Marale,_Karnataka.jpg"
     },
     {
