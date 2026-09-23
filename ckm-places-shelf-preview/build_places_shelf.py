@@ -393,6 +393,7 @@ def main() -> None:
     html = html.replace("SEVEN FIELD GUIDES", "SIX PLACE VOLUMES")
     html = html.replace("Seven field guides", "Six place volumes")
     html = html.replace("seven field guides", "six place volumes")
+    html = html.replace("Six place volumes for making", "Six place volumes for the district")
     html = html.replace("Seven Volumes", "Six Volumes")
     html = html.replace(
         'aria-label="Seven conceptual hardcovers"',
