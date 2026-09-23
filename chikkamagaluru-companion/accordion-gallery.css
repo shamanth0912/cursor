@@ -1,0 +1,265 @@
+.accordion-gallery {
+  --ag-accent: #c8ae6e;
+  --ag-overlay: #0c1f13;
+  --ag-text: #fcfbf8;
+  --ag-gap: 12px;
+  --ag-radius: 22px;
+  --ag-media-size: 320px;
+  --ag-dim: 0.35;
+
+  display: flex;
+  flex-direction: row;
+  gap: var(--ag-gap);
+  width: 100%;
+  max-width: 100%;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
+.accordion-gallery--vertical {
+  flex-direction: column;
+}
+
+.ag-panel {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--ag-radius);
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  outline: none;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  background: #0c1f13;
+  box-shadow: 0 10px 30px -18px rgba(12, 31, 19, 0.8);
+  will-change: flex-grow, transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ag-panel:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--ag-accent),
+    0 10px 30px -18px rgba(12, 31, 19, 0.8);
+}
+
+.ag-panel__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.ag-panel__media {
+  --ag-gray: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ag-media-size);
+  height: 100%;
+  filter: grayscale(var(--ag-gray));
+  will-change: transform, filter;
+}
+
+.accordion-gallery--vertical .ag-panel__media {
+  width: 100%;
+  height: var(--ag-media-size);
+}
+
+.ag-panel__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.ag-panel__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 28%, color-mix(in srgb, var(--ag-overlay) 72%, transparent) 100%),
+    color-mix(in srgb, var(--ag-overlay) calc(var(--ag-dim, 0.35) * 100%), transparent);
+}
+
+.ag-panel__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.2rem;
+  pointer-events: none;
+  z-index: 2;
+  text-align: center;
+}
+
+.ag-panel__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 28rem;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.ag-panel__kicker {
+  font-family: var(--sans, "Instrument Sans", sans-serif);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ag-text) 88%, transparent);
+  margin-bottom: 0.55rem;
+}
+
+.ag-panel__title {
+  color: var(--ag-text);
+  font-family: var(--serif, Georgia, serif);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 2.4vw, 2.05rem);
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  margin: 0 0 0.7rem;
+}
+
+.ag-panel__lede {
+  color: color-mix(in srgb, var(--ag-text) 92%, transparent);
+  font-family: var(--sans, "Instrument Sans", sans-serif);
+  font-size: clamp(0.82rem, 1.15vw, 0.98rem);
+  font-style: italic;
+  line-height: 1.45;
+  margin: 0 0 1.05rem;
+  max-width: 36ch;
+}
+
+.ag-panel__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: 999px;
+  background: rgba(252, 251, 248, 0.16);
+  border: 1px solid rgba(252, 251, 248, 0.38);
+  backdrop-filter: blur(8px);
+  font-family: var(--sans, "Instrument Sans", sans-serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ag-text);
+}
+
+.explore-accordion-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0 var(--pad, 1.25rem);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.explore-accordion-wrap .explore-nav {
+  flex: none;
+  z-index: 2;
+}
+
+@media (max-width: 720px) {
+  .explore-accordion-wrap {
+    grid-template-columns: 1fr;
+    padding: 0 var(--pad, 1rem);
+  }
+  .explore-accordion-wrap .explore-nav {
+    display: none;
+  }
+  .explore-section.reveal-on-scroll {
+    transform: none;
+  }
+  .accordion-gallery--stack {
+    position: relative;
+    top: auto;
+    z-index: 2;
+    flex-direction: column;
+    perspective: none;
+    height: auto !important;
+    gap: 10px;
+    padding-bottom: 2rem;
+    width: 100%;
+  }
+  .accordion-gallery--stack .ag-panel {
+    flex: 0 0 auto !important;
+    width: 100%;
+    height: var(--ag-compact-h, 4.75rem);
+    min-height: 0;
+    max-height: none;
+    transform: none !important;
+    overflow: hidden;
+    scroll-margin-top: 16svh;
+    will-change: auto;
+    transition: height 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .accordion-gallery--stack .ag-panel--active {
+    height: var(--ag-open-h, 62svh);
+  }
+  .accordion-gallery--stack .ag-panel__copy {
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+  .accordion-gallery--stack .ag-panel:not(.ag-panel--active) .ag-panel__copy {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+  .accordion-gallery--stack .ag-panel__media {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+  }
+  .accordion-gallery--stack .ag-panel__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .accordion-gallery--stack .ag-panel__overlay {
+    background:
+      linear-gradient(180deg, rgba(12, 31, 19, 0.12) 18%, rgba(12, 31, 19, 0.7) 100%);
+  }
+}
+
+@media (max-width: 520px) {
+  .accordion-gallery:not(.accordion-gallery--stack) {
+    flex-direction: column;
+    perspective: none;
+    height: auto !important;
+  }
+  .accordion-gallery:not(.accordion-gallery--stack) .ag-panel {
+    min-height: 7.4rem;
+    transform: none !important;
+  }
+  .accordion-gallery:not(.accordion-gallery--stack) .ag-panel--active {
+    min-height: 16rem;
+  }
+  .accordion-gallery:not(.accordion-gallery--stack) .ag-panel__media {
+    width: 100%;
+    height: var(--ag-media-size);
+  }
+  .ag-panel__title {
+    font-size: 1.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-panel,
+  .ag-panel__media {
+    will-change: auto;
+  }
+  .accordion-gallery--stack .ag-panel {
+    transition: none;
+  }
+}
