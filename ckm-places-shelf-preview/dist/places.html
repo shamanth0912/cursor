@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Places to visit · Chikkamagaluru</title>
+    <meta
+      name="description"
+      content="An independent companion for discovering Chikkamagaluru: peaks, waterfalls, temples, forests and seasons. Not a government site. Not a booking service. Nothing here is downloadable."
+    />
+    <meta name="theme-color" content="#0c1f13" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;700&family=Outfit:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=sage40" />
+    <link rel="stylesheet" href="carousel.css?v=sage6" />
+    <link rel="stylesheet" href="drift-wall.css?v=sage9" />
+    <link rel="stylesheet" href="accordion-gallery.css?v=sage9" />
+    <link rel="stylesheet" href="chikku.css?v=chikku7" />
+  </head>
+  <body data-page="places">
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <a class="wordmark" href="index.html">
+          <span class="wordmark-en">Chikkamagaluru</span>
+          <span class="wordmark-kn">ಚಿಕ್ಕಮಗಳೂರು</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+          <span class="sr-only">Open menu</span>
+        </button>
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="index.html" data-nav="home" data-i18n="nav_home">Home</a>
+          <a href="index.html#explore-chikmagaluru" data-nav="explore" data-i18n="nav_explore">Explore</a>
+          <a href="places.html" data-nav="places" data-i18n="nav_places">Places</a>
+          <a href="popular.html" data-nav="popular" data-i18n="nav_popular">Popular</a>
+          <a href="map.html" data-nav="map" data-i18n="nav_map">Map</a>
+          <a href="stories.html" data-nav="stories" data-i18n="nav_stories">Stories</a>
+          <a href="bean-to-cup.html" data-nav="beantocup">Bean to cup</a>
+          <a href="plan.html" data-nav="plan" data-i18n="nav_plan">Plan</a>
+          <a href="visit.html" data-nav="visit" data-i18n="nav_visit">Visit</a>
+        </nav>
+        <div class="header-tools">
+          <button class="lang-toggle" type="button" data-lang-toggle>ಕನ್ನಡ</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-enter"></main>
+
+    <div class="modal" id="place-modal" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="modal-panel t-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+        <button class="icon-close" type="button" data-close-modal aria-label="Close">×</button>
+        <div class="modal-media">
+          <img id="modal-image" alt="" width="1800" height="1200" />
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+    <div class="toast t-toast" id="toast" role="status" aria-live="polite"></div>
+    <noscript>
+      <p class="wrap noscript">This companion needs JavaScript for the map and search.</p>
+    </noscript>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="data.js?v=uniqphotos2"></script>
+    <script src="statistics.js?v=sage2"></script>
+    <script src="numbers.js?v=sage5"></script>
+    <script src="sections.js?v=sage51"></script>
+    <script src="map.js?v=sage9"></script>
+    <script src="carousel.js?v=sage6"></script>
+    <script src="drift-wall.js?v=sage9"></script>
+    <script src="accordion-gallery.js?v=sage9"></script>
+    <script src="app.js?v=sage33"></script>
+    <script src="chikku.js?v=chikku8"></script>
+  </body>
+</html>
