@@ -326,12 +326,15 @@
     launch.type = "button";
     launch.className = "ts-launch";
     launch.id = "ts-launch";
+    launch.setAttribute("data-ts-open", "1");
     launch.innerHTML = "<span aria-hidden=\"true\">✦</span> Sketch my route";
     composer.insertBefore(launch, composer.firstChild);
 
     var sheet = document.createElement("div");
     sheet.className = "ts-sheet";
     sheet.id = "ts-sheet";
+    sheet.setAttribute("role", "dialog");
+    sheet.setAttribute("aria-label", "Sketch my route");
     sheet.hidden = true;
     sheet.innerHTML =
       '<div class="ts-sheet-head">' +
@@ -343,7 +346,7 @@
       "<legend>How many days?</legend>" +
       '<div class="ts-seg" data-ts-days>' +
       [1, 2, 3, 4, 5]
-        .map(function (n, i) {
+        .map(function (n) {
           return (
             '<button type="button" data-days="' +
             n +
@@ -398,16 +401,38 @@
       });
     }
 
-    function openSheet() {
+    function openSheet(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       openPanel(true);
       sheet.hidden = false;
+      sheet.removeAttribute("hidden");
       root.classList.add("ts-open");
+      window.setTimeout(function () {
+        var go = sheet.querySelector("#ts-go");
+        if (go) go.focus({ preventScroll: true });
+      }, 40);
     }
-    function closeSheet() {
+    function closeSheet(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       sheet.hidden = true;
       root.classList.remove("ts-open");
     }
 
+    // Capture-phase so mobile scrim / overlays cannot swallow the open action
+    root.addEventListener(
+      "click",
+      function (event) {
+        var openBtn = event.target.closest("[data-ts-open], #ts-launch");
+        if (openBtn && root.contains(openBtn)) openSheet(event);
+      },
+      true
+    );
     launch.addEventListener("click", openSheet);
     sheet.querySelector("[data-ts-close]").addEventListener("click", closeSheet);
 
@@ -445,6 +470,15 @@
         push("bot", "<p>I could not compose the sketch just then. Try again.</p>", "is-refuse");
       }
     });
+
+    function maybeHashOpen() {
+      var hash = String(location.hash || "").toLowerCase();
+      if (hash === "#sketch" || hash === "#trip-sketch" || hash === "#route") {
+        openSheet();
+      }
+    }
+    maybeHashOpen();
+    window.addEventListener("hashchange", maybeHashOpen);
   }
 
   global.CKMTripSketch = {
