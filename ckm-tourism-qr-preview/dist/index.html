@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#07110c" />
+    <title>World Tourism Day 2026 · QR demo hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="visit.css" />
+  </head>
+  <body>
+    <div class="preview-pill">Preview only · World Tourism Day 2026 QR demo · not production</div>
+    <div class="shell">
+      <header class="hub-hero">
+        <p class="eyebrow" data-i="event">World Tourism Day 2026</p>
+        <h1 data-i="title">Scan. Know the place. Walk gently.</h1>
+        <p class="theme" data-i="theme">Digital Agenda and Artificial Intelligence to Redesign Tourism — Chikkamagaluru Tourism Department demo.</p>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">English</button>
+          <button type="button" data-lang="kn" aria-pressed="false">ಕನ್ನಡ</button>
+        </div>
+      </header>
+      <section class="place-grid" id="grid" aria-label="Demo destinations"></section>
+      <p class="hub-note" data-i="note">
+        Four taluk samples for the booth: Mullayanagiri (Chikkamagaluru), Horanadu (Kalasa), Sringeri, Bandaje Falls (Mudigere). Helplines use temporary 08262 placeholders.
+      </p>
+    </div>
+    <script>
+      (function () {
+        var lang = localStorage.getItem("ckm-qr-lang") || "en";
+        var ui = {
+          en: {
+            event: "World Tourism Day 2026",
+            title: "Scan. Know the place. Walk gently.",
+            theme: "Digital Agenda and Artificial Intelligence to Redesign Tourism — Chikkamagaluru Tourism Department demo.",
+            note: "Four taluk samples for the booth: Mullayanagiri (Chikkamagaluru), Horanadu (Kalasa), Sringeri, Bandaje Falls (Mudigere). Helplines use temporary 08262 placeholders.",
+            open: "Open page",
+          },
+          kn: {
+            event: "ವಿಶ್ವ ಪ್ರವಾಸೋದ್ಯಮ ದಿನ ೨೦೨೬",
+            title: "ಸ್ಕ್ಯಾನ್ ಮಾಡಿ. ಸ್ಥಳ ತಿಳಿಯಿರಿ. ನೆಮ್ಮದಿಯಿಂದ ನಡೆಯಿರಿ.",
+            theme: "ಪ್ರವಾಸೋದ್ಯಮವನ್ನು ಮರುವಿನ್ಯಾಸಗೊಳಿಸಲು ಡಿಜಿಟಲ್ ಅಜೆಂಡಾ ಮತ್ತು ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ — ಚಿಕ್ಕಮಗಳೂರು ಪ್ರವಾಸೋದ್ಯಮ ಇಲಾಖೆ ಡೆಮೊ.",
+            note: "ನಾಲ್ಕು ತಾಲ್ಲೂಕು ಮಾದರಿಗಳು: ಮುಳ್ಳಯ್ಯನಗಿರಿ (ಚಿಕ್ಕಮಗಳೂರು), ಹೊರನಾಡು (ಕಳಸ), ಶೃಂಗೇರಿ, ಬಂಡಾಜೆ ಜಲಪಾತ (ಮೂಡಿಗೆರೆ). ಸಹಾಯವಾಣಿ ಸಂಖ್ಯೆಗಳು ತಾತ್ಕಾಲಿಕ ೦೮೨೬೨.",
+            open: "ಪುಟ ತೆರೆಯಿರಿ",
+          },
+        };
+
+        function applyChrome() {
+          var t = ui[lang] || ui.en;
+          document.querySelectorAll("[data-i]").forEach(function (el) {
+            var k = el.getAttribute("data-i");
+            if (t[k]) el.textContent = t[k];
+          });
+          document.querySelectorAll(".lang-toggle button").forEach(function (b) {
+            b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
+          });
+        }
+
+        document.querySelectorAll(".lang-toggle button").forEach(function (b) {
+          b.addEventListener("click", function () {
+            lang = b.getAttribute("data-lang");
+            localStorage.setItem("ckm-qr-lang", lang);
+            applyChrome();
+            render();
+          });
+        });
+
+        var data = null;
+        function render() {
+          if (!data) return;
+          var grid = document.getElementById("grid");
+          grid.innerHTML = data.places
+            .map(function (p) {
+              var L = p[lang] || p.en;
+              return (
+                '<a class="place-card" href="visit.html?id=' +
+                encodeURIComponent(p.id) +
+                '">' +
+                '<div class="copy">' +
+                '<div class="taluk">' +
+                (lang === "kn" ? p.taluk_kn : p.taluk) +
+                "</div>" +
+                "<h2>" +
+                L.name +
+                "</h2>" +
+                '<p class="blurb">' +
+                L.kicker +
+                "</p>" +
+                '<img class="qr-mini" src="qr/' +
+                p.id +
+                '.png" alt="QR for ' +
+                L.name +
+                '" />' +
+                "</div>" +
+                '<div class="thumb"><img src="' +
+                p.hero +
+                '" alt="" loading="lazy" /></div>' +
+                "</a>"
+              );
+            })
+            .join("");
+        }
+
+        applyChrome();
+        fetch("places.json")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (j) {
+            data = j;
+            render();
+          });
+      })();
+    </script>
+  </body>
+</html>
