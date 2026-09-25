@@ -196,7 +196,7 @@
             <button type="button" class="num-sort-btn" data-visit-sort="name" aria-pressed="false">Destination name</button>
           </div>
           <div data-visitor-board>${chartHtml("visits")}</div>
-          <p class="num-summary">Among the five published destination rows, Datta Peetha recorded the most visits in 2025. Kemmannugundi had the largest percentage increase, while Sringeri and Horanadu recorded declines.</p>
+          <p class="num-summary">Among the five published destination rows, Sri Guru Dattatreya Baba Budan Swamy Dargah recorded the most visits in 2025. Kemmannugundi had the largest percentage increase, while Sringeri and Horanadu recorded declines.</p>
           <p class="num-source">Source: <a href="${esc(S.SOURCE.sourceUrl)}" rel="noopener noreferrer">${esc(S.SOURCE.sourceTitle)}</a>, Kannada Prabha, published 14 January 2026. Last reviewed 20 September 2026.</p>
           <details class="num-read">
             <summary>How to read this data</summary>

@@ -167,7 +167,7 @@
       );
     } else {
       bits.push(
-        `<p><strong>Day 1 · Coffee hills.</strong> ${esc(hills) || "Mullayanagiri at first light, Baba Budangiri and Jhari only if the jeep track is open."}</p>`
+        `<p><strong>Day 1 · Coffee hills.</strong> ${esc(hills) || "Mullayanagiri at first light, Sri Guru Dattatreya Baba Budan Swamy Dargah and Jhari only if the jeep track is open."}</p>`
       );
       if (wantsTemple && !wantsForest) {
         bits.push(

@@ -29,7 +29,7 @@
     { id: "sringeri", name: "Sringeri", catalogueId: "sringeri", visits2024: 3537777, visits2025: 2021279 },
     { id: "horanadu", name: "Horanadu", catalogueId: "horanadu", visits2024: 1800638, visits2025: 1294199 },
     { id: "kalasa", name: "Kalasa", catalogueId: "kalasa", visits2024: 797922, visits2025: 805882 },
-    { id: "datta-peetha", name: "Datta Peetha", catalogueId: "baba-budangiri", visits2024: 1255784, visits2025: 2487253 },
+    { id: "datta-peetha", name: "Sri Guru Dattatreya Baba Budan Swamy Dargah", catalogueId: "baba-budangiri", visits2024: 1255784, visits2025: 2487253 },
     { id: "kemmannugundi", name: "Kemmannugundi", catalogueId: "kemmanagundi", visits2024: 538217, visits2025: 1091493 },
   ];
 

@@ -679,17 +679,17 @@ window.CKM = {
     },
     {
       "id": "baba-budangiri",
-      "name": "Baba Budangiri / Datta Peetha",
-      "kannada": "ಬಾಬಾ ಬುಡನ್ ಗಿರಿ",
+      "name": "Sri Guru Dattatreya Baba Budan Swamy Dargah",
+      "kannada": "ಶ್ರೀ ಗುರು ದತ್ತಾತ್ರೇಯ ಬಾಬಾ ಬುದನ್ ಸ್ವಾಮಿ ದರ್ಗಾ",
       "category": "peaks",
       "taluk": "Chikkamagaluru",
       "lat": 13.4211,
       "lng": 75.7607,
       "elevation": "1,895 m",
       "image": "assets/baba-budangiri.jpg",
-      "blurb": "Shared Hindu–Muslim pilgrimage ridge — Datta Peetha and coffee-country legend.",
-      "summary": "Shri Guru Dattatreya Bababudan Swamy Dargah (Baba Budangiri / Datta Peetha), about 33 km from Chikkamagaluru, is a revered pilgrimage and trekking site in the Western Ghats. The brochure notes its spiritual significance, scenic landscapes and unique blend of traditions — a sacred shrine of Guru Dattatreya revered by both Hindu and Muslim communities. Nearest attractions: Mullayanagiri, Manikyadhara Falls, Jhari Falls.",
-      "visit": "The district site describes the range north of Chikkamagaluru town. Access, shrine timings and any crowd-management rules change; confirm with official notices rather than travel blogs.",
+      "blurb": "Official shrine name on the Chandra Drona ridge — also known locally as Baba Budangiri / Datta Peetha.",
+      "summary": "Sri Guru Dattatreya Baba Budan Swamy Dargah (also referenced as Shri Guru Dattatreya Swami Peetha / Sri Baba Budan Darga), about 33 km from Chikkamagaluru, is a revered pilgrimage and trekking site in the Western Ghats. The brochure notes its spiritual significance, scenic landscapes and unique blend of traditions — a sacred shrine of Guru Dattatreya revered by both Hindu and Muslim communities. Nearest attractions: Mullayanagiri, Manikyadhara Falls, Jhari Falls.",
+      "visit": "Use the official name Sri Guru Dattatreya Baba Budan Swamy Dargah. Access, shrine timings and crowd-management rules change; confirm with official notices rather than travel blogs.",
       "seasons": [
         "winter",
         "post-monsoon"
@@ -879,7 +879,7 @@ window.CKM = {
       "elevation": "1,930 m",
       "image": "assets/mullayanagiri.jpg?v=peaks1",
       "blurb": "Karnataka’s highest peak at 1,930 m — mist, coffee hills and a summit shrine.",
-      "summary": "Mullayanagiri is the highest peak in Karnataka at 1,930 metres above sea level, about 20 km from Chikkamagaluru. Surrounded by mist-covered hills and coffee plantations, it is one of the district’s most visited viewpoints for sunrise and sunset. Mullappa Swamy Temple stands at the summit. Nearest attractions: Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri.",
+      "summary": "Mullayanagiri is the highest peak in Karnataka at 1,930 metres above sea level, about 20 km from Chikkamagaluru. Surrounded by mist-covered hills and coffee plantations, it is one of the district’s most visited viewpoints for sunrise and sunset. Mullappa Swamy Temple stands at the summit. Nearest attractions: Sri Guru Dattatreya Baba Budan Swamy Dargah, Jhari Falls, Seethalayanagiri.",
       "visit": "The approach road is narrow with steep drops. Driving all the way to the temple is not always possible; the last stretch is typically walked. Road conditions, weather and any temporary closures should be checked locally before you go. Best route: Scenic mountain roads toward the ridge; last stretch often walked to the summit temple.",
       "seasons": [
         "winter",
@@ -906,7 +906,7 @@ window.CKM = {
       "distanceKm": 20,
       "bestTime": "September – February",
       "bestRoute": "Scenic mountain roads toward the ridge; last stretch often walked to the summit temple",
-      "nearestAttractions": "Shri Guru Dattatreya Bababudan Swamy Dargah, Jhari Falls, Seethalayanagiri"
+      "nearestAttractions": "Sri Guru Dattatreya Baba Budan Swamy Dargah, Jhari Falls, Seethalayanagiri"
     },
     {
       "id": "seethalayyanagiri",
@@ -2464,8 +2464,8 @@ window.CKM = {
       "lng": 75.7698,
       "image": "assets/manikyadhara.jpg",
       "blurb": "A sacred cascade near Baba Budangiri, known for clear water and pilgrim visits.",
-      "summary": "Manikyadhara Falls sits near the Shri Guru Dattatreya Bababudan Swamy Dargah ridge. The tourism brochure notes its lush setting, picnic and nature-walk appeal, and a belief in the healing quality of the clear water. A nearby Lord Shiva shrine also draws pilgrims.",
-      "visit": "Combine only if the ridge road is open and the fall is flowing. Rocks are slippery; there is no substitute for local, current advice. Best route: Short trek or scenic drive through the Western Ghats near Shri Guru Dattatreya Bababudan Swamy Dargah.",
+      "summary": "Manikyadhara Falls sits near the Sri Guru Dattatreya Baba Budan Swamy Dargah ridge. The tourism brochure notes its lush setting, picnic and nature-walk appeal, and a belief in the healing quality of the clear water. A nearby Lord Shiva shrine also draws pilgrims.",
+      "visit": "Combine only if the ridge road is open and the fall is flowing. Rocks are slippery; there is no substitute for local, current advice. Best route: Short trek or scenic drive through the Western Ghats near Sri Guru Dattatreya Baba Budan Swamy Dargah.",
       "seasons": [
         "monsoon",
         "post-monsoon"
@@ -2489,7 +2489,7 @@ window.CKM = {
       "durationMin": 45,
       "distanceKm": 30,
       "bestTime": "July – February",
-      "bestRoute": "Short trek or scenic drive through the Western Ghats near Shri Guru Dattatreya Bababudan Swamy Dargah"
+      "bestRoute": "Short trek or scenic drive through the Western Ghats near Sri Guru Dattatreya Baba Budan Swamy Dargah"
     },
     {
       "id": "shanti-falls",
@@ -2862,7 +2862,7 @@ window.CKM = {
       "kicker": "Coffee-country ridge",
       "hours": "Daylight on the ridge",
       "hoursDetail": "The cave shrine’s crowd rules and inner hours change with festivals. Use the ridge in daylight. Do not treat a blog’s sunrise slot as a published gate time.",
-      "why": "Chandra Drona, the hill the Coffee Board names for Baba Budan’s seven Mocha seeds, and a shared shrine to Datta Peetha. Tripadvisor and 2-day loops put it with Mullayanagiri because the same range holds both.",
+      "why": "Sri Guru Dattatreya Baba Budan Swamy Dargah on Chandra Drona — the ridge Coffee Board lore ties to Baba Budan’s seven Mocha seeds. Tripadvisor and 2-day loops put it with Mullayanagiri because the same range holds both.",
       "hoursSource": {
         "label": "District tourism",
         "url": "https://chikkamagaluru.nic.in/en/tourism/"
@@ -4601,7 +4601,7 @@ window.CKM = {
       "name": "Chikkamagaluru",
       "kannada": "ಚಿಕ್ಕಮಗಳೂರು",
       "count": 18,
-      "blurb": "Town, Mullayanagiri, Baba Budangiri and the coffee hills above the cloud line.",
+      "blurb": "Town, Mullayanagiri, Sri Guru Dattatreya Baba Budan Swamy Dargah and the coffee hills above the cloud line.",
       "listName": "Chikkamagaluru",
       "mapLabel": "Chikkamagaluru"
     },
@@ -4691,7 +4691,7 @@ window.CKM = {
         "jhari-falls",
         "coffee-hills"
       ],
-      "text": "A ridge sketch from town: Mullayanagiri at first light, Hirekolale at dusk, Baba Budangiri and Jhari if the jeep track is open. Coffee country is the landscape, not a room listing."
+      "text": "A ridge sketch from town: Mullayanagiri at first light, Hirekolale at dusk, Sri Guru Dattatreya Baba Budan Swamy Dargah and Jhari if the jeep track is open. Coffee country is the landscape, not a room listing."
     },
     {
       "id": "temple-terrace",
