@@ -16,7 +16,7 @@
 - Focused: https://cards-homeland-carol-enhancement.trycloudflare.com/sketch-preview.html
 - Home: https://cards-homeland-carol-enhancement.trycloudflare.com/index.html
 
-Open Chikku (tiger) → **Sketch my route**. Tunnel dies with the agent session — not production.
+Open Chikku (tiger) → **Sketch my route**, or append `#sketch` to auto-open the composer. Tunnel dies with the agent session — not production.
 
 ## Local
 
