@@ -1,0 +1,293 @@
+/* Three ridges trip sketch — Chikku composer + route card (preview) */
+
+.ts-launch {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0 0 0.55rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(12, 31, 19, 0.16);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1f3d2a, #2f5a3d);
+  color: #f6f1e6;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(31, 61, 42, 0.22);
+}
+.ts-launch:hover {
+  filter: brightness(1.05);
+}
+.ts-launch span {
+  color: #c4a35a;
+}
+
+.chikku.ts-open .chikku-log,
+.chikku.ts-open .chikku-composer {
+  visibility: hidden;
+}
+
+.ts-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem 0.9rem 1rem;
+  background: #f6f1e6;
+  overflow: auto;
+}
+.ts-sheet[hidden] {
+  display: none !important;
+}
+.ts-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.ts-sheet-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a6a2f;
+}
+.ts-sheet-head h3 {
+  margin: 0.15rem 0 0;
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  color: #0c1f13;
+}
+.ts-sheet-x {
+  border: 0;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #0c1f13;
+}
+.ts-sheet-lead {
+  margin: 0;
+  font-size: 0.84rem;
+  color: rgba(12, 31, 19, 0.72);
+  line-height: 1.4;
+}
+.ts-field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ts-field legend {
+  padding: 0;
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(12, 31, 19, 0.55);
+}
+.ts-seg {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.3rem;
+}
+.ts-seg[data-ts-pace] {
+  grid-template-columns: repeat(3, 1fr);
+}
+.ts-seg button,
+.ts-ridges-pick button {
+  border: 1px solid rgba(12, 31, 19, 0.14);
+  background: #fffdf8;
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.35rem;
+  font: inherit;
+  cursor: pointer;
+  color: #0c1f13;
+}
+.ts-seg button[aria-pressed="true"] {
+  background: #1f3d2a;
+  color: #f6f1e6;
+  border-color: #1f3d2a;
+}
+.ts-ridges-pick {
+  display: grid;
+  gap: 0.4rem;
+}
+.ts-ridges-pick button {
+  text-align: left;
+  padding: 0.55rem 0.65rem;
+}
+.ts-ridges-pick button strong {
+  display: block;
+  font-size: 0.92rem;
+}
+.ts-ridges-pick button span {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: rgba(12, 31, 19, 0.62);
+}
+.ts-ridges-pick button[aria-pressed="true"] {
+  background: #e8f0ea;
+  border-color: #1f3d2a;
+}
+.ts-ridges-pick button[aria-pressed="true"] span {
+  color: rgba(12, 31, 19, 0.75);
+}
+.ts-go {
+  margin-top: 0.25rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  background: #c4a35a;
+  color: #1a1206;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Result card in chat log */
+.chikku-msg .ts-card {
+  margin: 0.15rem 0 0;
+}
+.ts-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a6a2f;
+}
+.ts-ridges {
+  margin: 0.35rem 0 0.55rem;
+  font-size: 0.86rem;
+  color: rgba(12, 31, 19, 0.78);
+}
+.ts-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0 0 0.75rem;
+  overflow-x: auto;
+}
+.ts-bead {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e5ece6;
+  border: 1px solid rgba(12, 31, 19, 0.12);
+  font-size: 0.68rem;
+}
+.ts-bead.is-on {
+  background: #1f3d2a;
+  color: #f6f1e6;
+}
+.ts-rail {
+  flex: 1 1 auto;
+  height: 2px;
+  min-width: 0.6rem;
+  background: linear-gradient(90deg, #1f3d2a88, #c4a35a88);
+  border-radius: 2px;
+}
+.ts-day {
+  margin: 0 0 0.65rem;
+  padding: 0.55rem 0.6rem 0.65rem;
+  border-radius: 0.85rem;
+  background: #fffdf8;
+  border: 1px solid rgba(12, 31, 19, 0.1);
+}
+.ts-day header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+}
+.ts-day header span {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6a2f;
+}
+.ts-day header h4 {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.ts-stops {
+  display: grid;
+  gap: 0.4rem;
+}
+.ts-stop {
+  display: grid;
+  grid-template-columns: 3.1rem 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.2rem;
+  border-radius: 0.55rem;
+}
+.ts-stop:hover {
+  background: #eef4ef;
+}
+.ts-stop img,
+.ts-ph {
+  width: 3.1rem;
+  height: 2.35rem;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  background: #d5ddd6;
+}
+.ts-stop em {
+  display: block;
+  font-style: normal;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(12, 31, 19, 0.5);
+}
+.ts-stop strong {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+.ts-stop span {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(12, 31, 19, 0.58);
+}
+.ts-notes {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  color: rgba(12, 31, 19, 0.68);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+.ts-disclaimer {
+  margin: 0.55rem 0 0.35rem;
+  font-size: 0.78rem;
+  color: rgba(12, 31, 19, 0.62);
+  line-height: 1.4;
+}
+.ts-actions {
+  margin: 0;
+  font-size: 0.8rem;
+}
+.ts-actions a {
+  color: #1f3d2a;
+  font-weight: 600;
+}
+
+.chikku-panel {
+  position: relative;
+}
