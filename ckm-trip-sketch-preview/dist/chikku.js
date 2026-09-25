@@ -533,7 +533,8 @@
       const div = document.createElement("div");
       div.className = `chikku-msg is-${role}${extra ? ` ${extra}` : ""}`;
       div.innerHTML = html;
-      if (role === "bot") {
+      const skipStream = role !== "bot" || /ts-card|data-ts-skip-stream/.test(html);
+      if (role === "bot" && !skipStream) {
         div.classList.add("t-stream");
         const spans = wrapStreamWords(div);
         log.appendChild(div);
