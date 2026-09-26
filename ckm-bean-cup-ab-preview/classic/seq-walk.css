@@ -108,27 +108,30 @@ img{max-width:100%;display:block}
 .walk-title{
   display:none;
 }
-/* Classic left copy-rail: solid ink column so type never rides the plate. */
+/* Prod default: current rail — translucent left overlay over the 3D plates. */
 .copy-rail{
   position:absolute;z-index:3;left:0;top:0;bottom:0;
-  width:min(38vw, 26.5rem);
-  padding:calc(var(--nav-h) + 18px) 1.45rem clamp(28px,6vh,56px) var(--pad);
+  width:min(40vw, 28.5rem);
+  padding:calc(var(--nav-h) + 18px) 1.6rem clamp(28px,6vh,56px) var(--pad);
   display:flex;flex-direction:column;justify-content:space-between;gap:28px;
-  background:linear-gradient(90deg, #05070a 0%, #05070a 54%, rgba(5,7,10,.97) 72%, rgba(5,7,10,.72) 86%, rgba(5,7,10,.28) 94%, transparent 100%);
+  background:linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%);
   pointer-events:none;
 }
-html.layout-current .copy-rail{
-  width:min(40vw, 28.5rem);
-  background:linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%);
+/* Optional solid ink column (?layout=classic). */
+html.layout-classic .copy-rail{
+  width:min(38vw, 26.5rem);
+  padding:calc(var(--nav-h) + 18px) 1.45rem clamp(28px,6vh,56px) var(--pad);
+  background:linear-gradient(90deg, #05070a 0%, #05070a 54%, rgba(5,7,10,.97) 72%, rgba(5,7,10,.72) 86%, rgba(5,7,10,.28) 94%, transparent 100%);
 }
 .copy-rail .chips{pointer-events:auto}
 .copy-card{
   position:relative;left:auto;bottom:auto;
-  width:auto;max-width:32rem;
+  width:auto;max-width:34rem;
   padding:0;
   pointer-events:none;
   will-change:opacity,transform;
 }
+html.layout-classic .copy-card{max-width:32rem}
 .copy-card.is-pass{
   opacity:.18;
   transform:translate3d(0,22px,0);
@@ -140,18 +143,29 @@ html.layout-current .copy-rail{
 .copy-card .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--vermilion);box-shadow:0 0 10px var(--vermilion)}
 .copy-card h2{
   margin:0 0 14px;font-weight:400;letter-spacing:-.02em;text-transform:uppercase;
-  font-size:clamp(26px,3.8vw,48px);line-height:1.08;
+  font-size:clamp(28px,4.2vw,52px);line-height:1.08;
+  text-shadow:0 2px 28px rgba(3,6,8,.7);
+}
+html.layout-classic .copy-card h2{
+  font-size:clamp(26px,3.8vw,48px);
   text-shadow:none;
 }
 .copy-card .lead,.copy-card .body{
-  margin:0 0 12px;max-width:42ch;
-  font-size:clamp(15px,1.1vw,17px);line-height:1.65;color:#c5cfc8;
+  margin:0 0 12px;max-width:46ch;
+  font-size:clamp(15px,1.15vw,18px);line-height:1.65;color:#c5cfc8;
+  text-shadow:0 1px 18px rgba(3,6,8,.9);
+}
+html.layout-classic .copy-card .lead,
+html.layout-classic .copy-card .body{
+  max-width:42ch;
+  font-size:clamp(15px,1.1vw,17px);
   text-shadow:none;
 }
 .copy-card .body{color:#9aa59f;font-size:15px}
 .copy-card .cap{
-  margin:8px 0 0;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);max-width:48ch;
+  margin:8px 0 0;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);max-width:52ch;
 }
+html.layout-classic .copy-card .cap{max-width:48ch}
 .lore{
   display:none;margin-left:.45rem;padding:.12rem .45rem;border-radius:999px;
   border:1px solid rgba(224,35,28,.55);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion);
@@ -248,18 +262,17 @@ html.walk-snap .close{
   html.nav-open,html.nav-open body{overflow:hidden}
   .brand-tx{display:none}
   .chips{display:none !important}
-  /* Classic mobile: solid bottom copy band — photo stays in the mid band, type never overlaps. */
   .copy-rail{
     left:0;right:0;top:auto;bottom:0;height:auto;width:100% !important;
     max-height:34svh;
     padding:20px var(--pad) calc(18px + env(safe-area-inset-bottom, 0px));
-    background:linear-gradient(180deg, rgba(5,7,10,0) 0%, #05070a 18%, #05070a 100%) !important;
+    background:#05070a !important;
     border-top:0;
     justify-content:flex-end;
     gap:0;
   }
-  html.layout-current .copy-rail{
-    background:#05070a !important;
+  html.layout-classic .copy-rail{
+    background:linear-gradient(180deg, rgba(5,7,10,0) 0%, #05070a 18%, #05070a 100%) !important;
   }
   .copy-card{width:auto;max-width:none;bottom:auto}
   .copy-card .kicker{margin:0 0 10px;font-size:10px;letter-spacing:.2em;color:var(--muted)}

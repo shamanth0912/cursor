@@ -47,14 +47,14 @@ window.BTC_DEFAULTS = {
     rotYIdle: 0.06,
   },
   plates: {
-    width: 6.9,
-    baseX: 2.85,
-    altA: -0.1,
-    altB: 0.16,
+    width: 7.4,
+    baseX: 2.45,
+    altA: -0.12,
+    altB: 0.18,
     baseY: 0.08,
     ySine: 0.1,
-    rotY: -0.18,
-    fallbackShift: 0.34,
+    rotY: -0.16,
+    fallbackShift: 0.16,
   },
   shards: {
     enabled: true,
@@ -75,9 +75,9 @@ window.BTC_DEFAULTS = {
   },
   copyRail: {
     side: "left",
-    maxWidth: "min(38vw, 26.5rem)",
+    maxWidth: "min(40vw, 28.5rem)",
     overlayGradient:
-      "linear-gradient(90deg, #05070a 0%, #05070a 54%, rgba(5,7,10,.97) 72%, rgba(5,7,10,.72) 86%, rgba(5,7,10,.28) 94%, transparent 100%)",
+      "linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%)",
     passLow: 0.12,
     passHigh: 0.78,
     stageIndexVisible: true,

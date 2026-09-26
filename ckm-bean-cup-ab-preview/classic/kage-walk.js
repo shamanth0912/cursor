@@ -401,14 +401,14 @@
     "rotYIdle": 0.06
   },
   "plates": {
-    "width": 6.9,
-    "baseX": 2.85,
-    "altA": -0.1,
-    "altB": 0.16,
+    "width": 7.4,
+    "baseX": 2.45,
+    "altA": -0.12,
+    "altB": 0.18,
     "baseY": 0.08,
     "ySine": 0.1,
-    "rotY": -0.18,
-    "fallbackShift": 0.34
+    "rotY": -0.16,
+    "fallbackShift": 0.16
   },
   "shards": {
     "enabled": false,
@@ -429,8 +429,8 @@
   },
   "copyRail": {
     "side": "left",
-    "maxWidth": "min(38vw, 26.5rem)",
-    "overlayGradient": "linear-gradient(90deg, #05070a 0%, #05070a 54%, rgba(5,7,10,.97) 72%, rgba(5,7,10,.72) 86%, rgba(5,7,10,.28) 94%, transparent 100%)",
+    "maxWidth": "min(40vw, 28.5rem)",
+    "overlayGradient": "linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%)",
     "passLow": 0.12,
     "passHigh": 0.78,
     "stageIndexVisible": true,
@@ -451,22 +451,23 @@
     "force2d": false
   }
 };
-  var LAYOUT_CURRENT = {
+  /* Optional solid left rail (?layout=classic). Prod default is current overlay rail above. */
+  var LAYOUT_CLASSIC = {
     plates: {
-      width: 7.4,
-      baseX: 2.45,
-      altA: -0.12,
-      altB: 0.18,
+      width: 6.9,
+      baseX: 2.85,
+      altA: -0.1,
+      altB: 0.16,
       baseY: 0.08,
       ySine: 0.1,
-      rotY: -0.16,
-      fallbackShift: 0.16,
+      rotY: -0.18,
+      fallbackShift: 0.34,
     },
     copyRail: {
       side: "left",
-      maxWidth: "min(40vw, 28.5rem)",
+      maxWidth: "min(38vw, 26.5rem)",
       overlayGradient:
-        "linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%)",
+        "linear-gradient(90deg, #05070a 0%, #05070a 54%, rgba(5,7,10,.97) 72%, rgba(5,7,10,.72) 86%, rgba(5,7,10,.28) 94%, transparent 100%)",
       passLow: 0.12,
       passHigh: 0.78,
       stageIndexVisible: true,
@@ -477,8 +478,8 @@
 
   function resolveLayout() {
     var q = new URLSearchParams(window.location.search || "");
-    var raw = (q.get("layout") || "classic").toLowerCase();
-    return raw === "current" || raw === "bloom" || raw === "overlay" ? "current" : "classic";
+    var raw = (q.get("layout") || "current").toLowerCase();
+    return raw === "classic" || raw === "solid" ? "classic" : "current";
   }
   var LAYOUT = resolveLayout();
   try {
@@ -553,7 +554,7 @@
 
   function baseConfig() {
     var base = clone(WALK_DEFAULTS);
-    if (LAYOUT === "current") deepMerge(base, LAYOUT_CURRENT);
+    if (LAYOUT === "classic") deepMerge(base, LAYOUT_CLASSIC);
     return base;
   }
 
