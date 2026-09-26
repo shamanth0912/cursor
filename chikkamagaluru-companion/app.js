@@ -274,9 +274,12 @@
     if (!items.length) return;
     const stageW = el.clientWidth || window.innerWidth;
     const narrow = window.innerWidth < 720;
-    const tileWidth = narrow ? 148 : 200;
-    const tileHeight = narrow ? 98 : 132;
-    const columns = Math.min(narrow ? 4 : 7, Math.max(narrow ? 3 : 5, Math.ceil(stageW / tileWidth) + 1));
+    const tileWidth = narrow ? 148 : 188;
+    const tileHeight = narrow ? 98 : 124;
+    // Fill the stage width after 3D foreshortening — prior shiftX:-220 left an empty
+    // cream column on the right that looked like a missing photo line.
+    const colBudget = Math.ceil(stageW / (tileWidth * (narrow ? 0.92 : 0.78)));
+    const columns = Math.min(narrow ? 5 : 8, Math.max(narrow ? 4 : 6, colBudget));
     el._ckmDrift = window.CKMDriftWall.mount(el, {
       items,
       fill: "columns",
@@ -285,24 +288,24 @@
       tileHeight,
       gap: 0,
       radius: 10,
-      tilt: narrow ? 10 : 18,
-      turn: narrow ? -4 : -11,
-      roll: narrow ? 0 : -1,
-      perspective: narrow ? 1100 : 980,
-      depth: narrow ? 36 : 160,
+      tilt: narrow ? 10 : 16,
+      turn: narrow ? -3 : -8,
+      roll: narrow ? 0 : -0.5,
+      perspective: narrow ? 1100 : 1100,
+      depth: narrow ? 36 : 110,
       speed: 44,
       direction: "up",
       variance: 0.22,
-      parallax: narrow ? 0.18 : 0.7,
+      parallax: narrow ? 0.18 : 0.55,
       pauseOnHover: false,
-      lift: narrow ? 28 : 64,
-      fade: 0.08,
+      lift: narrow ? 28 : 56,
+      fade: 0.04,
       dim: 1,
       grayscale: false,
       overlayColor: "transparent",
-      scale: narrow ? 1.08 : 1.34,
-      shiftX: narrow ? -48 : -220,
-      originX: narrow ? "32%" : "22%",
+      scale: narrow ? 1.06 : 1.18,
+      shiftX: narrow ? -12 : -36,
+      originX: narrow ? "42%" : "38%",
       onOpenPlace(id) {
         openModal(id);
       },
