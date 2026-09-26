@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sandbox, Bean to cup admin</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#05070a" />
+    <link rel="icon" href="/dist/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/dist/secret-pathways-assets/fonts.css" />
+    <link rel="stylesheet" href="/dist/seq-walk.css?v=cup27" />
+    <link rel="stylesheet" href="hud.css" />
+    <script>
+      document.documentElement.classList.add("layout-classic");
+      document.documentElement.dataset.layout = "classic";
+    </script>
+  </head>
+  <body class="is-locked">
+    <div class="sandbox-banner">
+      <b>Sandbox only</b>
+      <span>Not the live site. Press H for the admin panel.</span>
+    </div>
+    <a class="skip" href="#reel">Skip to story</a>
+
+    <div id="pre" aria-live="polite">
+      <div class="pre-in">
+        <div class="pre-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none">
+            <ellipse cx="22" cy="24" rx="11" ry="14" stroke="#dfe7e0" stroke-width="1.2"/>
+            <path d="M33 20c4 1 6 5 4 9s-7 5-9 3" stroke="#dfe7e0" stroke-width="1.2"/>
+            <path d="M16 10c2-4 8-5 11-1" stroke="#e0231c" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <p class="pre-jp">SANDBOX</p>
+        <div class="pre-bar"><i id="pre-bar"></i></div>
+        <div class="pre-meta"><span>Admin walk</span><b id="pre-num">000</b><span>Not production</span></div>
+      </div>
+    </div>
+
+    <div id="grain" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="hud-root"></div>
+
+    <header class="nav" style="top:32px">
+      <a class="brand" href="/dist/index.html">
+        <svg viewBox="0 0 34 34" fill="none" aria-hidden="true">
+          <circle cx="17" cy="17" r="16" stroke="currentColor" stroke-width="1"/>
+          <path d="M11 21c2-8 10-10 13-4" stroke="#e0231c" stroke-width="1.2"/>
+        </svg>
+        <span class="brand-tx"><b>Sandbox</b><i>Bean to cup</i></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <span class="nav-link on">Immersive</span>
+        <button class="nav-lang" type="button" data-lang-toggle aria-pressed="false">ಕನ್ನಡ</button>
+      </nav>
+      <button class="nav-burger" type="button" aria-expanded="false" aria-label="Open menu"><i></i><i></i></button>
+    </header>
+
+    <div class="reel" id="reel">
+      <div class="stage">
+        <canvas id="seq" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+        <div class="copy-rail">
+        <div class="chips" aria-label="Acts">
+          <button class="chip on" type="button" data-act="I"><span class="num">I</span><b data-i="chip.i">Origin</b></button>
+          <button class="chip" type="button" data-act="II"><span class="num">II</span><b data-i="chip.ii">Crop</b></button>
+        </div>
+        <article class="copy-card" id="copy-card">
+          <p class="kicker"><span class="dot"></span><span id="copy-k">00 · The saint</span><span class="lore" id="copy-lore" hidden>Lore</span></p>
+          <h2 id="copy-h">Baba Budan, the name on this ridge</h2>
+          <p class="lead" id="copy-p1">Coffee did not arrive in this district as a cup.</p>
+          <p class="body" id="copy-p2">The years disagree. The ridge does not.</p>
+          <p class="cap" id="copy-cap">Companion still of Baba Budan.</p>
+        </article>
+        </div>
+        <div class="stage-meta">
+          <b id="frame-num">00</b>
+          <span id="frame-act">Act I · Origin</span>
+        </div>
+        <nav class="seq-dots" aria-label="Beats">
+          <button type="button" class="on" aria-label="00"><i></i></button>
+          <button type="button" aria-label="01"><i></i></button>
+          <button type="button" aria-label="02"><i></i></button>
+          <button type="button" aria-label="03"><i></i></button>
+          <button type="button" aria-label="04"><i></i></button>
+          <button type="button" aria-label="05"><i></i></button>
+          <button type="button" aria-label="06"><i></i></button>
+          <button type="button" aria-label="07"><i></i></button>
+          <button type="button" aria-label="08"><i></i></button>
+          <button type="button" aria-label="09"><i></i></button>
+          <button type="button" aria-label="10"><i></i></button>
+          <button type="button" aria-label="11"><i></i></button>
+          <button type="button" aria-label="12"><i></i></button>
+          <button type="button" aria-label="13"><i></i></button>
+          <button type="button" aria-label="14"><i></i></button>
+        </nav>
+      </div>
+      <div class="reel-spacer" aria-hidden="true"></div>
+    </div>
+
+    <section class="longread" id="longread"></section>
+
+    <section class="close" id="close">
+      <p class="eyebrow">Sandbox</p>
+      <h2>Tune here. Ship later.</h2>
+      <p>Export JSON from the admin panel when the feel is right. The public Bean to cup page does not load this HUD.</p>
+    </section>
+
+    <script src="/dist/secret-pathways-assets/three.min.js"></script>
+    <script src="beats.js"></script>
+    <script src="defaults.js"></script>
+    <script src="hud.js"></script>
+    <script src="sandbox-walk.js"></script>
+  </body>
+</html>
