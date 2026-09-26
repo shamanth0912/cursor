@@ -1,0 +1,98 @@
+{
+  "world": {
+    "background": "#05070a",
+    "fogColor": "#05070a",
+    "fogDensity": 0.021,
+    "grainOpacity": 0.05,
+    "vignette": 0.74,
+    "scrollHeightVh": 1100,
+    "pixelRatioCap": 1.75
+  },
+  "camera": {
+    "startX": 0.4,
+    "startY": 0.2,
+    "startZ": 8,
+    "fov": 39,
+    "near": 0.17,
+    "far": 205,
+    "rightBias": 1,
+    "rightBiasMobile": 0.85,
+    "mobileBreakpoint": 820,
+    "lookY": 0.42,
+    "lookAhead": 9.8,
+    "weave": 0.25,
+    "lerpPower": 0.0107,
+    "pointerX": 0.22,
+    "pointerY": 0.18
+  },
+  "motion": {
+    "easing": "smoothstep",
+    "gap": 11,
+    "dollyExtra": 2.3,
+    "plateFloat": 0.04,
+    "shardFloat": 0.18,
+    "beanBob": 0.12
+  },
+  "focus": {
+    "ahead": 8,
+    "range": 8.7,
+    "growAhead": 9,
+    "growRange": 4,
+    "growAmount": 0.12,
+    "opacityIdle": 0.28,
+    "opacityGain": 0.7,
+    "idleDriftX": 0.28,
+    "rotY": -0.14,
+    "rotYIdle": 0.06
+  },
+  "plates": {
+    "width": 7.3,
+    "baseX": 2.45,
+    "altA": -0.12,
+    "altB": 0.18,
+    "baseY": 0.08,
+    "ySine": 0.11,
+    "rotY": -0.16,
+    "fallbackShift": 0.17
+  },
+  "shards": {
+    "enabled": true,
+    "x": 4.55,
+    "y": 1.76,
+    "zOffset": 1.8,
+    "scale": 0.3,
+    "opacity": 0.34,
+    "rotY": -0.38
+  },
+  "particles": {
+    "enabled": false,
+    "count": 36,
+    "minX": 1.8,
+    "spreadX": 5.5,
+    "bean": "#4a2c1a",
+    "cherry": "#8a1f18"
+  },
+  "copyRail": {
+    "side": "left",
+    "maxWidth": "min(40vw, 28.5rem)",
+    "overlayGradient": "linear-gradient(90deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.88) 62%, rgba(5,7,10,.35) 88%, transparent 100%)",
+    "passLow": 0.12,
+    "passHigh": 0.78,
+    "stageIndexVisible": true,
+    "dotsVisible": true,
+    "chipsVisible": true
+  },
+  "nav": {
+    "hideOnScroll": true,
+    "hideThreshold": 140,
+    "jumpSmooth": true,
+    "actIIIndex": 9
+  },
+  "a11y": {
+    "reducedMotion": "auto"
+  },
+  "debug": {
+    "hudOpen": true,
+    "force2d": false
+  }
+}
