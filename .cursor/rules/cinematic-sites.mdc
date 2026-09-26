@@ -1,0 +1,13 @@
+---
+description: Route cinematic/animated website work through Shamanth’s permanent skill catalog, including later chats in this repo.
+alwaysApply: true
+---
+
+# Animated site skills (always on)
+
+For expensive animated websites, looping video heroes, glass nav, scroll-driven cinematic pages, GSAP/Lenis, Google Flow/Veo, or Runway loops:
+
+1. Read `.cursor/skills/animated-site-skills/SKILL.md` and pick a route.
+2. Then follow that skill (`cinematic-sites`, `cinematic-scroll`, `immersive-web`, `motion-graphics`, `frontend-design`).
+
+Do not invent a generic Tailwind landing page when one of these skills applies.
