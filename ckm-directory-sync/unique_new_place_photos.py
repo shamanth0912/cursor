@@ -165,14 +165,15 @@ JOBS = {
     ),
     "marle-twin-temples": (
         "marle-twin-temples.jpg",
-        "Chennakesava temple, Marale, Karnataka.jpg",
-        "center",
+        # Commons only published floor plans for Marale; use exterior still.
+        "https://aravindgundumane.com/wp-content/uploads/2014/07/DSC_8495.jpg",
+        "upper",
         {
-            "place": "Chennakesava temple, Marale (Marle)",
-            "file": "Chennakesava temple, Marale, Karnataka.jpg",
-            "artist": "see Commons file page",
-            "license": "CC BY-SA 4.0",
-            "url": "https://commons.wikimedia.org/wiki/File:Chennakesava_temple,_Marale,_Karnataka.jpg",
+            "place": "Marle Twin Temples (Chennakeshava), Chikkamagaluru",
+            "file": "DSC_8495.jpg",
+            "artist": "Aravind Gundumane",
+            "license": "All rights reserved — exterior still (Commons only published floor plans)",
+            "url": "https://aravindgundumane.com/2014/07/twin-temples-of-marle/",
         },
     ),
     "baggavalli-yoganarasimha": (

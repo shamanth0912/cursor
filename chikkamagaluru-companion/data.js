@@ -4551,11 +4551,11 @@ window.CKM = {
     },
     {
       "local": "marle-twin-temples.jpg",
-      "place": "Chennakesava temple, Marale (Marle)",
-      "file": "Chennakesava temple, Marale, Karnataka.jpg",
-      "artist": "see Commons file page",
-      "license": "CC BY-SA 4.0",
-      "url": "https://commons.wikimedia.org/wiki/File:Chennakesava_temple,_Marale,_Karnataka.jpg"
+      "place": "Marle Twin Temples (Chennakeshava), Chikkamagaluru",
+      "file": "DSC_8495.jpg",
+      "artist": "Aravind Gundumane",
+      "license": "All rights reserved — exterior still (Commons only published floor plans)",
+      "url": "https://aravindgundumane.com/2014/07/twin-temples-of-marle/"
     },
     {
       "local": "baggavalli-yoganarasimha.jpg",
